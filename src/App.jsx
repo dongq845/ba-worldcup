@@ -1,8 +1,16 @@
 // ba-worldcup/src/App.jsx
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
+import { Tooltip } from "flowbite-react";
 
 const generateUUID = () => crypto.randomUUID();
+
+const POINTS = {
+  WINNER: 5,
+  RUNNER_UP: 3,
+  SEMI_FINALIST: 2,
+  QUARTER_FINALIST: 1,
+};
 
 // --- Testing Variables ---
 // TEST_ON: Master switch for test mode. (1 = On, 0 = Off)
@@ -313,6 +321,22 @@ const App = () => {
     setModalImage(null);
   };
 
+  let semiFinalLosers = [];
+  let quarterFinalLosers = [];
+
+  if (tournamentWinner) {
+    // Semi-finalists who didn't make the final
+    semiFinalLosers = semiFinalists.filter(
+      (sf) =>
+        sf.id !== tournamentWinner.id && (!runnerUp || sf.id !== runnerUp.id)
+    );
+
+    // Quarter-finalists who didn't make the semi-finals
+    const semiFinalistIds = semiFinalists.map((sf) => sf.id);
+    quarterFinalLosers = quarterFinalists.filter(
+      (qf) => !semiFinalistIds.includes(qf.id)
+    );
+  }
   return (
     <>
       {modalImage && (
@@ -320,7 +344,7 @@ const App = () => {
           className="fixed inset-0 bg-black/80 flex justify-center items-center z-50 transition-opacity duration-300"
           onClick={closeImageModal}
         >
-          <div className="relative p-4" onClick={(e) => e.stopPropagation()}>
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
             <img
               src={modalImage}
               alt="Full size view"
@@ -328,10 +352,11 @@ const App = () => {
             />
             <button
               onClick={closeImageModal}
-              className="absolute top-0 right-0 m-1 bg-transparent text-white text-5xl font-bold leading-none hover:text-gray-300"
+              className="absolute top-2 right-2 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-4xl font-bold text-white transition-colors hover:bg-black/75"
               aria-label="Close image view"
             >
-              ×
+              {/* The "relative bottom-px" nudges the element up from its original position */}
+              <span className="mb-2">×</span>
             </button>
           </div>
         </div>
@@ -349,7 +374,7 @@ const App = () => {
               </h1>
               <button
                 onClick={() => setGameStarted(true)}
-                className="px-8 py-4 bg-blue-600 text-white rounded-lg text-5xl hover:bg-blue-700 transition-colors"
+                className="px-8 py-4 bg-blue-600 text-white rounded-lg text-4xl hover:bg-blue-700 transition-colors hover:cursor-pointer"
               >
                 Start
               </button>
@@ -359,11 +384,70 @@ const App = () => {
               <table className="w-full text-left table-fixed">
                 <thead className="bg-gray-700">
                   <tr>
-                    <th className="p-3 w-18 text-center">Rank</th>
-                    <th className="p-3 w-32 text-center">Image</th>
-                    <th className="p-3 w-32">Name</th>
-                    <th className="p-3 w-20">Total Points</th>
-                    <th className="p-3 w-36 text-center">Win Rate</th>
+                    <th className="p-3 w-16 text-left">Rank</th>
+                    <th className="p-3 w-24 text-left">Image</th>
+                    <th className="p-3 w-32 text-left">Name</th>
+                    <th className="p-3 w-20 text-left">
+                      <div className="inline-block">
+                        <Tooltip
+                          content={
+                            <div className="text-left">
+                              Points are awarded based on final tournament rank:
+                              <ul className="mt-2 space-y-1">
+                                <li>
+                                  Winner (1st):{" "}
+                                  <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
+                                    +5 points
+                                  </strong>
+                                </li>
+                                <li>
+                                  Runner-up (2nd):{" "}
+                                  <strong className="font-semibold bg-gray-300 px-1.5 py-0.5 rounded-md">
+                                    +3 points
+                                  </strong>
+                                </li>
+                                <li>
+                                  Semi-finalists (3rd-4th):{" "}
+                                  <strong className="font-semibold bg-amber-600 px-1.5 py-0.5 rounded-md">
+                                    +2 points
+                                  </strong>
+                                </li>
+                                <li>
+                                  Quarter-finalists (5th-8th):{" "}
+                                  <strong className="font-semibold">
+                                    +1 point
+                                  </strong>
+                                </li>
+                              </ul>
+                            </div>
+                          }
+                          style="light"
+                        >
+                          <span className="cursor-help border-b-2 border-dotted border-gray-400">
+                            Total Points
+                          </span>
+                        </Tooltip>
+                      </div>
+                    </th>
+                    <th className="p-3 w-32 text-left">
+                      <div className="inline-block">
+                        <Tooltip
+                          content={
+                            <span>
+                              The percentage of tournaments finished in
+                              <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
+                                first place
+                              </strong>
+                            </span>
+                          }
+                          style="light"
+                        >
+                          <span className="cursor-help border-b-2 border-dotted border-gray-400">
+                            Win Rate
+                          </span>
+                        </Tooltip>
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -384,7 +468,7 @@ const App = () => {
                             <div className="h-6 w-32 bg-gray-700 rounded animate-pulse"></div>
                           </td>
                           <td className="p-3 align-middle">
-                            <div className="h-6 w-12 bg-gray-700 rounded animate-pulse"></div>
+                            <div className="h-6 w-20 bg-gray-700 rounded animate-pulse"></div>
                           </td>
                           <td className="p-3 align-middle">
                             <div className="h-6 w-full bg-gray-700 rounded-full animate-pulse"></div>
@@ -396,13 +480,13 @@ const App = () => {
                           key={waifu.id}
                           className="border-b border-gray-700 last:border-b-0 hover:bg-gray-700/50"
                         >
-                          <td className="p-3 font-bold text-xl align-middle text-center">
+                          <td className="p-3 font-bold text-xl align-middle">
                             {index + 1}
                           </td>
                           <td className="p-1 align-middle">
                             {/* --- MODIFICATION: Image container size increased --- */}
                             <div
-                              className="w-24 h-24 rounded-full overflow-hidden group cursor-pointer mx-auto"
+                              className="w-24 h-24 rounded-full overflow-hidden group cursor-pointer"
                               onClick={() => openImageModal(waifu.image)}
                             >
                               <img
@@ -415,7 +499,7 @@ const App = () => {
                           <td className="p-3 text-lg align-middle">
                             {waifu.name}
                           </td>
-                          <td className="p-3 align-middle">
+                          <td className="p-3 text-lg align-middle text-amber-300">
                             {waifu.totalPoints}
                           </td>
                           {/* --- MODIFICATION: Replaced text with a progress bar --- */}
@@ -449,14 +533,19 @@ const App = () => {
           </footer>
         </div>
       ) : tournamentWinner ? (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-          <div className="text-5xl font-bold mb-4">Tournament Winner!</div>
+        <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white px-4 py-16">
+          <div className="text-5xl font-bold mb-4 text-center">
+            Tournament Winner!
+          </div>
           <img
             src={tournamentWinner.image}
             alt={tournamentWinner.name}
             className="w-96 h-96 object-cover object-top rounded-lg shadow-lg"
           />
           <div className="text-4xl mt-4 font-bold">{tournamentWinner.name}</div>
+          <p className="mt-2 text-2xl font-bold text-amber-400">
+            +{POINTS.WINNER} Points
+          </p>
           <div className="flex items-center space-x-4 mt-8">
             <button
               onClick={handleGoHome}
@@ -494,6 +583,90 @@ const App = () => {
             }`}
           >
             Successfully submitted results!
+          </div>
+          <div className="mt-12 w-full max-w-5xl bg-gray-800/50 p-6 rounded-xl">
+            <h2 className="text-3xl font-bold text-center mb-6 border-b border-gray-600 pb-4">
+              Full Results
+            </h2>
+            <div className="space-y-8">
+              {/* Runner-Up */}
+              {runnerUp && (
+                <div>
+                  <h3 className="text-2xl font-semibold text-gray-400 mb-4">
+                    Runner-Up (2nd)
+                  </h3>
+                  <div className="flex justify-center">
+                    <div className="flex flex-col items-center text-center">
+                      <img
+                        src={runnerUp.image}
+                        alt={runnerUp.name}
+                        className="w-32 h-32 rounded-full object-cover object-top border-4 border-gray-500"
+                      />
+                      <p className="mt-2 text-lg font-semibold">
+                        {runnerUp.name}
+                      </p>
+                      <p className="text-xl font-bold text-blue-400">
+                        +{POINTS.RUNNER_UP} Points
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Semi-Finalists */}
+              {semiFinalLosers.length > 0 && (
+                <div>
+                  <h3 className="text-2xl font-semibold text-gray-400 mb-4">
+                    Semi-Finalists (3rd & 4th)
+                  </h3>
+                  <div className="flex justify-center gap-8">
+                    {semiFinalLosers.map((char) => (
+                      <div
+                        key={char.id}
+                        className="flex flex-col items-center text-center"
+                      >
+                        <img
+                          src={char.image}
+                          alt={char.name}
+                          className="w-28 h-28 rounded-full object-cover object-top border-4 border-gray-600"
+                        />
+                        <p className="mt-2 font-semibold">{char.name}</p>
+                        <p className="text-lg font-bold text-blue-400">
+                          +{POINTS.SEMI_FINALIST} Points
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quarter-Finalists */}
+              {quarterFinalLosers.length > 0 && (
+                <div>
+                  <h3 className="text-2xl font-semibold text-gray-400 mb-4">
+                    Quarter-Finalists (5th - 8th)
+                  </h3>
+                  <div className="flex justify-center gap-x-6 gap-y-4 flex-wrap">
+                    {quarterFinalLosers.map((char) => (
+                      <div
+                        key={char.id}
+                        className="flex flex-col items-center text-center"
+                      >
+                        <img
+                          src={char.image}
+                          alt={char.name}
+                          className="w-24 h-24 rounded-full object-cover object-top border-4 border-gray-700"
+                        />
+                        <p className="mt-1 font-medium">{char.name}</p>
+                        <p className="text-md font-bold text-blue-400">
+                          +{POINTS.QUARTER_FINALIST} Point
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       ) : (
