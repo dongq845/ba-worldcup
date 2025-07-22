@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "name": "Amau Ako",
+    "image": "images/Amau Ako.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Asuma Toki",
+    "image": "images/Asuma Toki.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Hayase Yuuka",
+    "image": "images/Hayase Yuuka.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Hinomia Chinatsu",
+    "image": "images/Hinomia Chinatsu.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Ichinose Asuna",
+    "image": "images/Ichinose Asuna.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Iochi Mari",
+    "image": "images/Iochi Mari.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Joumae Saori",
+    "image": "images/Joumae Saori.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Kiryuu Kikyou",
+    "image": "images/Kiryuu Kikyou.jpg"
+  },
+  {
+    "id": 9,
+    "name": "Kosaka Wakamo",
+    "image": "images/Kosaka Wakamo.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Kyoyama Kazusa",
+    "image": "images/Kyoyama Kazusa.jpg"
+  },
+  {
+    "id": 11,
+    "name": "Misono Mika",
+    "image": "images/Misono Mika.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Ryuuge Kisaki",
+    "image": "images/Ryuuge Kisaki.jpg"
+  },
+  {
+    "id": 13,
+    "name": "Sorasaki Hina",
+    "image": "images/Sorasaki Hina.jpg"
+  },
+  {
+    "id": 14,
+    "name": "Sunaookami Shiroko",
+    "image": "images/Sunaookami Shiroko.jpg"
+  },
+  {
+    "id": 15,
+    "name": "Takanashi Hoshino",
+    "image": "images/Takanashi Hoshino.jpg"
+  },
+  {
+    "id": 16,
+    "name": "Tendou Alice",
+    "image": "images/Tendou Alice.jpg"
+  },
+  {
+    "id": 17,
+    "name": "Tsukiyuki Miyako",
+    "image": "images/Tsukiyuki Miyako.jpg"
+  },
+  {
+    "id": 18,
+    "name": "Aikiyo Fuuka",
+    "image": "images/Aikiyo Fuuka.jpg"
+  },
+  {
+    "id": 19,
+    "name": "Hakari Atsuko",
+    "image": "images/Hakari Atsuko.jpg"
+  },
+  {
+    "id": 20,
+    "name": "Izumimoto Eimi",
+    "image": "images/Izumimoto Eimi.jpg"
+  },
+  {
+    "id": 21,
+    "name": "Kagami Chihiro",
+    "image": "images/Kagami Chihiro.jpg"
+  },
+  {
+    "id": 22,
+    "name": "Kurimura Airi",
+    "image": "images/Kurimura Airi.jpg"
+  },
+  {
+    "id": 23,
+    "name": "Motomiya Chiaki",
+    "image": "images/Motomiya Chiaki.jpg"
+  },
+  {
+    "id": 24,
+    "name": "Murokasa Akane",
+    "image": "images/Murokasa Akane.jpg"
+  },
+  {
+    "id": 25,
+    "name": "Nemugaki Fubuki",
+    "image": "images/Nemugaki Fubuki.jpg"
+  },
+  {
+    "id": 26,
+    "name": "Okusora Ayane",
+    "image": "images/Okusora Ayane.jpg"
+  },
+  {
+    "id": 27,
+    "name": "Renkawa Cherino",
+    "image": "images/Renkawa Cherino.jpg"
+  },
+  {
+    "id": 28,
+    "name": "Rikuhachima Aru",
+    "image": "images/Rikuhachima Aru.jpg"
+  },
+  {
+    "id": 29,
+    "name": "Shirasu Azusa",
+    "image": "images/Shirasu Azusa.jpg"
+  },
+  {
+    "id": 30,
+    "name": "Utsumi Aoba",
+    "image": "images/Utsumi Aoba.jpg"
+  },
+  {
+    "id": 31,
+    "name": "Wanibuchi Akari",
+    "image": "images/Wanibuchi Akari.jpg"
+  },
+  {
+    "id": 32,
+    "name": "Waraku Chise",
+    "image": "images/Waraku Chise.jpg"
+  }
+]
