@@ -6,7 +6,7 @@ const generateUUID = () => crypto.randomUUID();
 
 // --- Testing Variables ---
 // TEST_ON: Master switch for test mode. (1 = On, 0 = Off)
-const TEST_ON = 0;
+const TEST_ON = 1;
 // TEST_ROUND: Set to 8 for Quarter-Finals, 4 for Semi-Finals, etc.
 // This is only active if TEST_ON is 1.
 const TEST_ROUND = 8;
@@ -359,11 +359,11 @@ const App = () => {
               <table className="w-full text-left table-fixed">
                 <thead className="bg-gray-700">
                   <tr>
-                    <th className="p-3 w-20 text-center">Rank</th>
+                    <th className="p-3 w-18 text-center">Rank</th>
                     <th className="p-3 w-32 text-center">Image</th>
                     <th className="p-3 w-32">Name</th>
                     <th className="p-3 w-20">Total Points</th>
-                    <th className="p-3 w-32">Win Rate</th>
+                    <th className="p-3 w-36 text-center">Win Rate</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -377,7 +377,7 @@ const App = () => {
                           <td className="p-3 align-middle text-center">
                             <div className="h-6 w-6 bg-gray-700 rounded animate-pulse mx-auto"></div>
                           </td>
-                          <td className="p-2 align-middle">
+                          <td className="p-1 align-middle">
                             <div className="w-24 h-24 bg-gray-700 rounded-full animate-pulse mx-auto"></div>
                           </td>
                           <td className="p-3 align-middle">
@@ -399,7 +399,7 @@ const App = () => {
                           <td className="p-3 font-bold text-xl align-middle text-center">
                             {index + 1}
                           </td>
-                          <td className="p-2 align-middle">
+                          <td className="p-1 align-middle">
                             {/* --- MODIFICATION: Image container size increased --- */}
                             <div
                               className="w-24 h-24 rounded-full overflow-hidden group cursor-pointer mx-auto"
