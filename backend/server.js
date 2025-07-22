@@ -15,10 +15,11 @@ const DB_FILE = path.join(__dirname, "waifus.db");
 const WAIFUS_JSON = path.join(__dirname, "waifus.json");
 let db;
 
-// --- Point Distribution ---
+// --- MODIFICATION: Point Distribution Updated ---
 const POINTS = {
-  WINNER: 10,
+  WINNER: 5,
   RUNNER_UP: 3,
+  SEMI_FINALIST: 2,
   QUARTER_FINALIST: 1,
 };
 
@@ -29,8 +30,6 @@ const POINTS = {
     driver: sqlite3.Database,
   });
 
-  // --- MODIFICATION: waifus table is now for METADATA only ---
-  // It no longer stores points or win counts.
   await db.exec(`
     CREATE TABLE IF NOT EXISTS waifus (
       id INTEGER PRIMARY KEY,
@@ -39,13 +38,15 @@ const POINTS = {
     )
   `);
 
-  // --- MODIFICATION: This new table holds all user votes ---
-  // The userId is the PRIMARY KEY, ensuring one user can only have one entry.
+  // --- MODIFICATION: Added semiFinalistIds to submissions table ---
+  // If you are running this on an existing database, you may need to delete
+  // the waifus.db file to allow the server to recreate it with the new column.
   await db.exec(`
     CREATE TABLE IF NOT EXISTS submissions (
         userId TEXT PRIMARY KEY,
         winnerId INTEGER NOT NULL,
         runnerUpId INTEGER,
+        semiFinalistIds TEXT,
         quarterFinalistIds TEXT
     )
   `);
@@ -73,9 +74,10 @@ app.get("/api/waifus", async (req, res) => {
   res.json(characters);
 });
 
-// --- MODIFICATION: Handles overwriting user submissions ---
+// --- MODIFICATION: Handles submission with semi-finalists ---
 app.post("/api/submit", async (req, res) => {
-  const { userId, winner, runnerUp, quarterFinalists } = req.body;
+  const { userId, winner, runnerUp, semiFinalists, quarterFinalists } =
+    req.body;
 
   if (!userId || !winner) {
     return res
@@ -83,19 +85,24 @@ app.post("/api/submit", async (req, res) => {
       .json({ error: "userId and winner data are required." });
   }
 
-  // Stringify the array of quarter-finalist IDs for storage
+  const sfIds = JSON.stringify(semiFinalists.map((sf) => sf.id));
   const qfIds = JSON.stringify(quarterFinalists.map((qf) => qf.id));
 
-  // "INSERT OR REPLACE" is the key to overwriting previous submissions.
   const stmt = await db.prepare(
-    "INSERT OR REPLACE INTO submissions (userId, winnerId, runnerUpId, quarterFinalistIds) VALUES (?, ?, ?, ?)"
+    "INSERT OR REPLACE INTO submissions (userId, winnerId, runnerUpId, semiFinalistIds, quarterFinalistIds) VALUES (?, ?, ?, ?, ?)"
   );
-  await stmt.run(userId, winner.id, runnerUp ? runnerUp.id : null, qfIds);
+  await stmt.run(
+    userId,
+    winner.id,
+    runnerUp ? runnerUp.id : null,
+    sfIds,
+    qfIds
+  );
 
   res.status(200).json({ message: "Submission saved successfully." });
 });
 
-// --- MODIFICATION: Calculates rankings dynamically from submissions ---
+// --- MODIFICATION: Calculates rankings with semi-finalist points ---
 app.get("/api/rankings", async (req, res) => {
   const allWaifus = await db.all("SELECT * FROM waifus");
   const allSubmissions = await db.all("SELECT * FROM submissions");
@@ -104,20 +111,24 @@ app.get("/api/rankings", async (req, res) => {
   const wins = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
 
   for (const sub of allSubmissions) {
-    // Award points for winner
     if (sub.winnerId) {
       points[sub.winnerId] += POINTS.WINNER;
       wins[sub.winnerId] += 1;
     }
-    // Award points for runner-up
     if (sub.runnerUpId) {
       points[sub.runnerUpId] += POINTS.RUNNER_UP;
     }
-    // Award points for quarter-finalists
+    // Award points for semi-finalists
+    if (sub.semiFinalistIds) {
+      const sfIds = JSON.parse(sub.semiFinalistIds);
+      for (const id of sfIds) {
+        if (points[id] !== undefined) points[id] += POINTS.SEMI_FINALIST;
+      }
+    }
     if (sub.quarterFinalistIds) {
       const qfIds = JSON.parse(sub.quarterFinalistIds);
       for (const id of qfIds) {
-        points[id] += POINTS.QUARTER_FINALIST;
+        if (points[id] !== undefined) points[id] += POINTS.QUARTER_FINALIST;
       }
     }
   }

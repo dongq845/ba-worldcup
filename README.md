@@ -9,8 +9,9 @@ This is a full-stack web application that allows users to vote for their favorit
 - **Dynamic Tournament Generation:** The application gracefully handles any number of characters. If the character count is not a perfect power of two (e.g., 32, 64, 128), it automatically creates a fair preliminary "play-in" round to establish a perfect bracket.
 - **Global Point-Based Ranking System:**
   - Rankings are determined by a "Total Points" system. When a user completes a tournament:
-    - The Winner receives 10 points.
+    - The Winner receives 5 points.
     - The Runner-up receives 3 points.
+    - The Semi-Finalists each receive 2 points.
     - The Quarter-Finalists each receive 1 point.
   - These points are aggregated across all submissions to create a global leaderboard.
 - **Fair & Persistent Voting:** Each user has a unique ID stored in their browser. Submitting a new tournament result **overwrites their previous submission**, preventing any user from spamming points and ensuring the rankings remain fair.

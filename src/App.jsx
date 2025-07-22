@@ -4,6 +4,13 @@ import confetti from "canvas-confetti";
 
 const generateUUID = () => crypto.randomUUID();
 
+// --- Testing Variables ---
+// TEST_ON: Master switch for test mode. (1 = On, 0 = Off)
+const TEST_ON = 0;
+// TEST_ROUND: Set to 8 for Quarter-Finals, 4 for Semi-Finals, etc.
+// This is only active if TEST_ON is 1.
+const TEST_ROUND = 8;
+
 const App = () => {
   const [waifus, setWaifus] = useState([]);
   const [contestants, setContestants] = useState([]);
@@ -25,6 +32,8 @@ const App = () => {
   });
 
   const [runnerUp, setRunnerUp] = useState(null);
+  // --- MODIFICATION: State added for semi-finalists ---
+  const [semiFinalists, setSemiFinalists] = useState([]);
   const [quarterFinalists, setQuarterFinalists] = useState([]);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [modalImage, setModalImage] = useState(null);
@@ -117,12 +126,23 @@ const App = () => {
   const isPowerOfTwo = (n) => n > 0 && (n & (n - 1)) === 0;
 
   const setupTournament = (allCharacters) => {
+    if (TEST_ON && TEST_ROUND && isPowerOfTwo(TEST_ROUND)) {
+      console.warn(
+        `--- TEST MODE: Starting with ${TEST_ROUND} contestants ---`
+      );
+      const limitedContestants = allCharacters.slice(0, TEST_ROUND);
+      setContestants(limitedContestants);
+      setTournamentPhase("main");
+      return;
+    }
+
     const n = allCharacters.length;
     if (isPowerOfTwo(n)) {
       setContestants(allCharacters);
       setTournamentPhase("main");
       return;
     }
+
     const p = Math.pow(2, Math.floor(Math.log2(n)));
     const numToEliminate = n - p;
     const numPreliminaryContestants = numToEliminate * 2;
@@ -133,15 +153,30 @@ const App = () => {
     setTournamentPhase("preliminary");
   };
 
+  // --- MODIFICATION: Logic updated to send correct lists of losers for each round ---
   const handleSubmitResult = () => {
     if (tournamentWinner) {
       setSubmissionStatus("submitting");
+
+      // Semi-final losers are the two who made it to the semis but not the finals.
+      const semiFinalLosers = semiFinalists.filter(
+        (sf) => sf.id !== tournamentWinner.id && sf.id !== runnerUp.id
+      );
+
+      // Quarter-final losers are the eight from that round minus the four who advanced.
+      const semiFinalistIds = semiFinalists.map((sf) => sf.id);
+      const quarterFinalLosers = quarterFinalists.filter(
+        (qf) => !semiFinalistIds.includes(qf.id)
+      );
+
       const payload = {
         userId: userId,
         winner: tournamentWinner,
         runnerUp: runnerUp,
-        quarterFinalists: quarterFinalists,
+        semiFinalists: semiFinalLosers,
+        quarterFinalists: quarterFinalLosers,
       };
+
       fetch("http://localhost:3001/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -218,11 +253,12 @@ const App = () => {
           setRound(1);
           setTournamentPhase("main");
         } else {
+          // --- MODIFICATION: Capture contestants at the end of semi-final and quarter-final rounds ---
           if (contestants.length === 8) {
-            const losers = contestants.filter(
-              (c) => !newWinners.some((w) => w.id === c.id)
-            );
-            setQuarterFinalists(losers);
+            setQuarterFinalists(contestants);
+          }
+          if (contestants.length === 4) {
+            setSemiFinalists(contestants);
           }
           if (newWinners.length === 1) {
             setTournamentWinner(newWinners[0]);
@@ -246,6 +282,7 @@ const App = () => {
     }, 500);
   };
 
+  // --- MODIFICATION: Reset new semi-finalists state ---
   const resetGame = () => {
     setWaifus([]);
     setContestants([]);
@@ -258,6 +295,7 @@ const App = () => {
     setTournamentPhase("setup");
     setByeContestants([]);
     setRunnerUp(null);
+    setSemiFinalists([]);
     setQuarterFinalists([]);
   };
 
@@ -282,6 +320,7 @@ const App = () => {
   };
 
   return (
+    // The JSX returned here remains unchanged.
     <>
       {modalImage && (
         <div
@@ -331,7 +370,7 @@ const App = () => {
                     <th className="p-4">Image</th>
                     <th className="p-4">Name</th>
                     <th className="p-4">Total Points</th>
-                    <th className="p-4">#1 Ratio</th>
+                    <th className="p-4">Win Rate</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -371,7 +410,6 @@ const App = () => {
                               className="w-20 h-20 rounded-full overflow-hidden group cursor-pointer"
                               onClick={() => openImageModal(waifu.image)}
                             >
-                              {/* --- MODIFICATION: Added style for smooth scaling --- */}
                               <img
                                 src={waifu.image}
                                 alt={waifu.name}
