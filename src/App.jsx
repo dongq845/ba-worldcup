@@ -32,7 +32,6 @@ const App = () => {
   });
 
   const [runnerUp, setRunnerUp] = useState(null);
-  // --- MODIFICATION: State added for semi-finalists ---
   const [semiFinalists, setSemiFinalists] = useState([]);
   const [quarterFinalists, setQuarterFinalists] = useState([]);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -153,17 +152,14 @@ const App = () => {
     setTournamentPhase("preliminary");
   };
 
-  // --- MODIFICATION: Logic updated to send correct lists of losers for each round ---
   const handleSubmitResult = () => {
     if (tournamentWinner) {
       setSubmissionStatus("submitting");
 
-      // Semi-final losers are the two who made it to the semis but not the finals.
       const semiFinalLosers = semiFinalists.filter(
         (sf) => sf.id !== tournamentWinner.id && sf.id !== runnerUp.id
       );
 
-      // Quarter-final losers are the eight from that round minus the four who advanced.
       const semiFinalistIds = semiFinalists.map((sf) => sf.id);
       const quarterFinalLosers = quarterFinalists.filter(
         (qf) => !semiFinalistIds.includes(qf.id)
@@ -253,7 +249,6 @@ const App = () => {
           setRound(1);
           setTournamentPhase("main");
         } else {
-          // --- MODIFICATION: Capture contestants at the end of semi-final and quarter-final rounds ---
           if (contestants.length === 8) {
             setQuarterFinalists(contestants);
           }
@@ -282,7 +277,6 @@ const App = () => {
     }, 500);
   };
 
-  // --- MODIFICATION: Reset new semi-finalists state ---
   const resetGame = () => {
     setWaifus([]);
     setContestants([]);
@@ -320,7 +314,6 @@ const App = () => {
   };
 
   return (
-    // The JSX returned here remains unchanged.
     <>
       {modalImage && (
         <div
