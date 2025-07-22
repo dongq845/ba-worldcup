@@ -59,7 +59,7 @@ Generated code
 └── vite.config.js        # Vite configuration
 ```
 
-# How to Run Locally
+## How to Run Locally
 
 To run this project on your local machine, you will need to have Node.js installed.
 
