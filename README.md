@@ -7,28 +7,30 @@ This is a full-stack web application that allows users to vote for their favorit
 ## Core Features
 
 - **Dynamic Tournament Generation:** The application gracefully handles any number of characters. If the character count is not a perfect power of two (e.g., 32, 64, 128), it automatically creates a fair preliminary "play-in" round to establish a perfect bracket.
-
-- **Global Ranking System:** Every completed tournament can be submitted to the backend. The results are aggregated in an SQLite database, and the home page displays a live leaderboard of all characters, ranked by their "#1 Ratio" across all user votes.
-
-- Interactive Voting Experience:
-
-  - Clean, side-by-side matchups.
+- **Global Point-Based Ranking System:**
+  - Rankings are determined by a "Total Points" system. When a user completes a tournament:
+    - The Winner receives 10 points.
+    - The Runner-up receives 3 points.
+    - The Quarter-Finalists each receive 1 point.
+  - These points are aggregated across all submissions to create a global leaderboard.
+- **Fair & Persistent Voting:** Each user has a unique ID stored in their browser. Submitting a new tournament result **overwrites their previous submission**, preventing any user from spamming points and ensuring the rankings remain fair.
+- **Interactive Voting Experience:**
+  - Clean, side-by-side matchups with a smooth, animated progress bar.
   - Visual feedback with a green border highlighting the user's selection.
-  - Full keyboard navigation using the left and right arrow keys.
-
-- Polished User Experience:
-  - Confetti celebration for the tournament winner.
-  - Confirmation dialogs for the "Home" button and page reloads to prevent accidental loss of tournament progress.
-  - A professional skeleton loader while the ranking data is being fetched.
+  - Full keyboard navigation using the left and right arrow keys for voting.
+- **Polished User Experience:**
+  - A confetti celebration for the tournament winner.
+  - A custom, auto-dismissing pop-up notification confirms a successful result submission.
+  - Clicking a character's thumbnail in the rankings opens a full-size image modal with a dimmed background.
+  - Confirmation dialogs for the "Home" button and page reloads prevent accidental loss of tournament progress.
+  - A professional skeleton loader is shown while the ranking data is being fetched.
   - An automatic "Character Roster Updated" date in the footer that reads the file's metadata, requiring zero manual updates.
 
 ## Tech Stack
 
-- Frontend: React, Vite, Tailwind CSS
-- Backend: Node.js, Express.js
-- Database: SQLite
-
----
+- **Frontend:** React, Vite, Tailwind CSS
+- **Backend:** Node.js, Express.js
+- **Database:** SQLite
 
 ## Project Structure
 
