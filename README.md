@@ -67,7 +67,7 @@ First, clone this project to your local machine.
 
 ```bash
 git clone <your-repository-url>
-cd my-waifu-cup-app
+cd ba-worldcup
 ```
 
 ### 2. Install Dependencies

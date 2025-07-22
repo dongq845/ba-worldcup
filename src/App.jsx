@@ -24,6 +24,11 @@ const App = () => {
     loserId: null,
   });
 
+  const [runnerUp, setRunnerUp] = useState(null);
+  const [quarterFinalists, setQuarterFinalists] = useState([]);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
+
   useEffect(() => {
     if (gameStarted && tournamentPhase === "setup") {
       fetch("http://localhost:3001/api/waifus")
@@ -31,17 +36,14 @@ const App = () => {
         .then((data) => {
           const shuffledWaifus = shuffleArray(data);
           setWaifus(shuffledWaifus);
-          // Call the new setup function instead of directly setting contestants
           setupTournament(shuffledWaifus);
         })
         .catch((error) => console.error("Failed to load waifus:", error));
     }
-  }, [gameStarted]);
+  }, [gameStarted, tournamentPhase]);
 
-  // UX-IMPROVEMENT: Celebrate the winner with confetti
   useEffect(() => {
     if (tournamentWinner && typeof confetti === "function") {
-      // Fire confetti when a winner is declared
       confetti({
         particleCount: 150,
         spread: 90,
@@ -50,26 +52,26 @@ const App = () => {
     }
   }, [tournamentWinner]);
 
-  // UX-IMPROVEMENT: Add keyboard navigation (left/right arrows) for voting
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // Ensure this only runs during a match
+      if (modalImage) {
+        if (event.key === "Escape") {
+          closeImageModal();
+        }
+        return;
+      }
       if (!gameStarted || tournamentWinner || contestants.length < 2) return;
-
       if (event.key === "ArrowLeft") {
         handleSelect(contestants[currentMatch * 2]);
       } else if (event.key === "ArrowRight") {
         handleSelect(contestants[currentMatch * 2 + 1]);
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
-    // Cleanup function to remove the listener
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-    // Re-bind the event listener if the contestants in the current match change
-  }, [gameStarted, tournamentWinner, contestants, currentMatch]);
+  }, [gameStarted, tournamentWinner, contestants, currentMatch, modalImage]);
 
   useEffect(() => {
     let currentUserId = localStorage.getItem("waifuCupUserId");
@@ -90,9 +92,7 @@ const App = () => {
         console.error("Failed to load rankings:", error);
         setIsLoadingRankings(false);
       });
-  }, []);
 
-  useEffect(() => {
     const handleBeforeUnload = (event) => {
       if (gameStarted && !tournamentWinner) {
         event.preventDefault();
@@ -105,59 +105,64 @@ const App = () => {
     };
   }, [gameStarted, tournamentWinner]);
 
-  // A function to check if a number is a power of two
+  useEffect(() => {
+    if (showSuccessPopup) {
+      const timer = setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessPopup]);
+
   const isPowerOfTwo = (n) => n > 0 && (n & (n - 1)) === 0;
 
   const setupTournament = (allCharacters) => {
     const n = allCharacters.length;
-
-    // If the number is already a perfect power of two, no preliminary round is needed.
     if (isPowerOfTwo(n)) {
       setContestants(allCharacters);
       setTournamentPhase("main");
       return;
     }
-
-    // Calculate the bracket
-    const p = Math.pow(2, Math.floor(Math.log2(n))); // Largest power of 2 less than n
+    const p = Math.pow(2, Math.floor(Math.log2(n)));
     const numToEliminate = n - p;
     const numPreliminaryContestants = numToEliminate * 2;
-
-    // The first characters in the shuffled list get a bye
     const byes = allCharacters.slice(0, n - numPreliminaryContestants);
     const prelims = allCharacters.slice(n - numPreliminaryContestants);
-
     setByeContestants(byes);
-    setContestants(prelims); // The contestants for the preliminary round
+    setContestants(prelims);
     setTournamentPhase("preliminary");
   };
 
   const handleSubmitResult = () => {
-    if (tournamentWinner && userId) {
+    if (tournamentWinner) {
       setSubmissionStatus("submitting");
+      const payload = {
+        userId: userId,
+        winner: tournamentWinner,
+        runnerUp: runnerUp,
+        quarterFinalists: quarterFinalists,
+      };
       fetch("http://localhost:3001/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userId,
-          waifuId: tournamentWinner.id,
-        }),
+        body: JSON.stringify(payload),
       })
         .then((response) => {
           if (response.ok) {
             setSubmissionStatus("submitted");
-            fetch("http://localhost:3001/api/rankings")
-              .then((res) => res.json())
-              .then((data) => {
-                setRankings(data.rankings);
-                setLastUpdated(data.lastUpdated);
-              });
+            setShowSuccessPopup(true);
+            return fetch("http://localhost:3001/api/rankings");
           } else {
-            setSubmissionStatus("error");
+            throw new Error("Submission failed");
           }
         })
+        .then((res) => res.json())
+        .then((data) => {
+          setRankings(data.rankings);
+          setLastUpdated(data.lastUpdated);
+        })
         .catch((error) => {
-          console.error("Failed to submit result:", error);
+          console.error("Failed to submit or refresh:", error);
           setSubmissionStatus("error");
         });
     }
@@ -177,60 +182,56 @@ const App = () => {
     return array;
   };
 
-  const getRoundName = (currentRound) => {
-    // Handle the new preliminary round name
-    if (tournamentPhase === "preliminary") {
-      return "Preliminary Round";
+  const getRoundName = () => {
+    if (tournamentWinner) return "Winner!";
+    if (tournamentPhase === "preliminary") return "Preliminary Round";
+    const numContestants = contestants.length;
+    if (numContestants === 2) return "Finals";
+    if (numContestants === 4) return "Semi-Finals";
+    if (numContestants === 8) return "Quarter-Finals";
+    if (numContestants > 8 && isPowerOfTwo(numContestants)) {
+      return `Round of ${numContestants}`;
     }
-
-    // This calculates the round name for the main tournament
-    const mainTournamentRounds = Math.log2(contestants.length);
-    const roundOf = Math.pow(2, mainTournamentRounds - round + 1);
-
-    if (roundOf === 4) return "Quarter-Finals";
-    if (roundOf === 2) return "Finals";
-    if (roundOf < 2) return "Winner!";
-
-    return `Round of ${roundOf}`;
+    return `Round ${round}`;
   };
 
   const handleSelect = (winner) => {
-    // Prevent multiple clicks while feedback is being shown
     if (selectionFeedback.winnerId) return;
-
     const waifu1 = contestants[currentMatch * 2];
     const waifu2 = contestants[currentMatch * 2 + 1];
     const loser = winner.id === waifu1.id ? waifu2 : waifu1;
-
-    // UX-IMPROVEMENT: Set the winner/loser for visual feedback
     setSelectionFeedback({ winnerId: winner.id, loserId: loser.id });
-
-    // UX-IMPROVEMENT: Wait a moment before loading the next match
     setTimeout(() => {
       const newWinners = [...winners, winner];
       setWinners(newWinners);
       const nextMatch = currentMatch + 1;
-
       if (nextMatch * 2 >= contestants.length) {
-        // --- THIS IS THE NEW LOGIC ---
-        // If the preliminary round just ended
         if (tournamentPhase === "preliminary") {
-          // Combine the winners with the 'bye' characters and shuffle them
           const newMainContestants = shuffleArray([
             ...byeContestants,
             ...newWinners,
           ]);
           setContestants(newMainContestants);
           setWinners([]);
-          setByeContestants([]); // Clear the byes
+          setByeContestants([]);
           setCurrentMatch(0);
-          setRound(1); // Start the main tournament at Round 1
-          setTournamentPhase("main"); // Switch to the main phase
-        }
-        // Logic for the main tournament phase
-        else {
+          setRound(1);
+          setTournamentPhase("main");
+        } else {
+          if (contestants.length === 8) {
+            const losers = contestants.filter(
+              (c) => !newWinners.some((w) => w.id === c.id)
+            );
+            setQuarterFinalists(losers);
+          }
           if (newWinners.length === 1) {
             setTournamentWinner(newWinners[0]);
+            if (contestants.length === 2) {
+              const finalLoser = contestants.find(
+                (c) => c.id !== newWinners[0].id
+              );
+              setRunnerUp(finalLoser);
+            }
           } else {
             setContestants(newWinners);
             setWinners([]);
@@ -241,13 +242,11 @@ const App = () => {
       } else {
         setCurrentMatch(nextMatch);
       }
-      // Reset feedback for the next round
       setSelectionFeedback({ winnerId: null, loserId: null });
-    }, 500); // 500ms delay
+    }, 500);
   };
 
   const resetGame = () => {
-    // ... (no changes in this function)
     setWaifus([]);
     setContestants([]);
     setWinners([]);
@@ -258,279 +257,287 @@ const App = () => {
     setSubmissionStatus("idle");
     setTournamentPhase("setup");
     setByeContestants([]);
+    setRunnerUp(null);
+    setQuarterFinalists([]);
   };
 
-  // UX-IMPROVEMENT: New handler for the "Home" button
   const handleGoHome = () => {
-    // Display a confirmation dialog to the user
-    const isConfirmed = window.confirm(
-      "Are you sure you want to go home? All tournament progress will be lost."
-    );
-
-    // Only reset the game if the user confirms
-    if (isConfirmed) {
-      resetGame();
+    if (gameStarted && !tournamentWinner) {
+      const isConfirmed = window.confirm(
+        "Are you sure you want to go home? All tournament progress will be lost."
+      );
+      if (!isConfirmed) {
+        return;
+      }
     }
+    resetGame();
   };
 
-  // In the loading screen, use the tournamentPhase state
-  if (contestants.length === 0 && gameStarted) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white text-2xl">
-        {tournamentPhase === "setup"
-          ? "Setting up tournament..."
-          : "Loading contestants..."}
-      </div>
-    );
-  }
+  const openImageModal = (imageUrl) => {
+    setModalImage(imageUrl);
+  };
 
-  if (!gameStarted) {
-    return (
-      <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-        <main className="flex-grow flex flex-col items-center justify-center p-4">
-          <div
-            className="flex flex-col items-center justify-center text-center"
-            style={{ minHeight: "50vh" }}
-          >
-            <h1 className="text-5xl font-bold mb-8">
-              Blue Archive Waifu World Cup
-            </h1>
+  const closeImageModal = () => {
+    setModalImage(null);
+  };
+
+  return (
+    <>
+      {modalImage && (
+        <div
+          className="fixed inset-0 bg-black/80 flex justify-center items-center z-50 transition-opacity duration-300"
+          onClick={closeImageModal}
+        >
+          <div className="relative p-4" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={modalImage}
+              alt="Full size view"
+              className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
+            />
             <button
-              onClick={() => setGameStarted(true)}
-              className="px-8 py-4 bg-blue-600 text-white rounded-lg text-5xl hover:bg-blue-700 transition-colors"
+              onClick={closeImageModal}
+              className="absolute top-0 right-0 m-1 bg-transparent text-white text-5xl font-bold leading-none hover:text-gray-300"
+              aria-label="Close image view"
             >
-              Start
+              ×
             </button>
           </div>
+        </div>
+      )}
 
-          <h2 className="text-3xl font-bold mb-4 mt-4">Global Rankings</h2>
-          <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg overflow-auto">
-            <table className="w-full text-left">
-              <thead className="bg-gray-700">
-                <tr>
-                  <th className="p-4">Rank</th>
-                  <th className="p-4">Image</th>
-                  <th className="p-4">Name</th>
-                  {/* UX-IMPROVEMENT: New column for Total Wins */}
-                  <th className="p-4">Total Wins</th>
-                  <th className="p-4">#1 Ratio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* UX-IMPROVEMENT: Skeleton loader for rankings */}
-                {isLoadingRankings
-                  ? [...Array(5)].map((_, i) => (
-                      <tr
-                        key={i}
-                        className="border-b border-gray-700 last:border-b-0"
-                      >
-                        <td className="p-4 align-middle">
-                          <div className="h-6 w-6 bg-gray-700 rounded animate-pulse"></div>
-                        </td>
-                        <td className="p-2 align-middle">
-                          <div className="w-20 h-20 bg-gray-700 rounded-full animate-pulse"></div>
-                        </td>
-                        <td className="p-2 align-middle">
-                          <div className="h-6 w-32 bg-gray-700 rounded animate-pulse"></div>
-                        </td>
-                        <td className="p-4 align-middle">
-                          <div className="h-6 w-12 bg-gray-700 rounded animate-pulse"></div>
-                        </td>
-                        <td className="p-4 align-middle">
-                          <div className="h-6 w-20 bg-gray-700 rounded animate-pulse"></div>
-                        </td>
-                      </tr>
-                    ))
-                  : rankings.map((waifu, index) => (
-                      <tr
-                        key={waifu.id}
-                        className="border-b border-gray-700 last:border-b-0 hover:bg-gray-700/50"
-                      >
-                        <td className="p-4 font-bold text-xl align-middle">
-                          {index + 1}
-                        </td>
-                        <td className="p-2 align-middle">
-                          <div className="w-20 h-20 rounded-full overflow-hidden group">
-                            <img
-                              src={waifu.image}
-                              alt={waifu.name}
-                              className="w-full h-full object-cover object-top scale-125"
-                            />
-                          </div>
-                        </td>
-                        <td className="p-2 text-lg align-middle">
-                          {waifu.name}
-                        </td>
-                        {/* UX-IMPROVEMENT: Display total win count */}
-                        <td className="p-4 align-middle">{waifu.winCount}</td>
-                        <td className="p-4 align-middle">
-                          {waifu.rank1Ratio.toFixed(2)}%
-                        </td>
-                      </tr>
-                    ))}
-              </tbody>
-            </table>
-          </div>
-        </main>
-        <footer className="w-full text-center py-6">
-          {lastUpdated && (
-            <p className="text-sm text-gray-500">
-              Character Roster Updated: {lastUpdated}
-            </p>
-          )}
-        </footer>
-      </div>
-    );
-  }
-
-  if (tournamentWinner) {
-    const submitButtonText = {
-      idle: "Submit Result",
-      submitting: "Submitting...",
-      submitted: "Submitted ✓",
-      error: "Submission Failed",
-    };
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-        <div className="text-5xl font-bold mb-4">Tournament Winner!</div>
-        <img
-          src={tournamentWinner.image}
-          alt={tournamentWinner.name}
-          className="w-96 h-96 object-cover object-top rounded-lg shadow-lg"
-        />
-        <div className="text-4xl mt-4 font-bold">{tournamentWinner.name}</div>
-        <div className="flex items-center space-x-4 mt-8">
-          <button
-            onClick={resetGame}
-            className="px-6 py-3 bg-gray-600 text-white rounded-lg text-xl hover:bg-gray-700 transition-colors"
-          >
-            Home
-          </button>
-          {submissionStatus !== "submitted" && (
+      {!gameStarted ? (
+        <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+          <main className="flex-grow flex flex-col items-center justify-center p-4">
+            <div
+              className="flex flex-col items-center justify-center text-center"
+              style={{ minHeight: "50vh" }}
+            >
+              <h1 className="text-5xl font-bold mb-8">
+                Blue Archive Waifu World Cup
+              </h1>
+              <button
+                onClick={() => setGameStarted(true)}
+                className="px-8 py-4 bg-blue-600 text-white rounded-lg text-5xl hover:bg-blue-700 transition-colors"
+              >
+                Start
+              </button>
+            </div>
+            <h2 className="text-3xl font-bold mb-4 mt-4">Global Rankings</h2>
+            <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg overflow-auto">
+              <table className="w-full text-left">
+                <thead className="bg-gray-700">
+                  <tr>
+                    <th className="p-4">Rank</th>
+                    <th className="p-4">Image</th>
+                    <th className="p-4">Name</th>
+                    <th className="p-4">Total Points</th>
+                    <th className="p-4">#1 Ratio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isLoadingRankings
+                    ? [...Array(5)].map((_, i) => (
+                        <tr
+                          key={i}
+                          className="border-b border-gray-700 last:border-b-0"
+                        >
+                          <td className="p-4 align-middle">
+                            <div className="h-6 w-6 bg-gray-700 rounded animate-pulse"></div>
+                          </td>
+                          <td className="p-2 align-middle">
+                            <div className="w-20 h-20 bg-gray-700 rounded-full animate-pulse"></div>
+                          </td>
+                          <td className="p-2 align-middle">
+                            <div className="h-6 w-32 bg-gray-700 rounded animate-pulse"></div>
+                          </td>
+                          <td className="p-4 align-middle">
+                            <div className="h-6 w-12 bg-gray-700 rounded animate-pulse"></div>
+                          </td>
+                          <td className="p-4 align-middle">
+                            <div className="h-6 w-20 bg-gray-700 rounded animate-pulse"></div>
+                          </td>
+                        </tr>
+                      ))
+                    : rankings.map((waifu, index) => (
+                        <tr
+                          key={waifu.id}
+                          className="border-b border-gray-700 last:border-b-0 hover:bg-gray-700/50"
+                        >
+                          <td className="p-4 font-bold text-xl align-middle">
+                            {index + 1}
+                          </td>
+                          <td className="p-2 align-middle">
+                            <div
+                              className="w-20 h-20 rounded-full overflow-hidden group cursor-pointer"
+                              onClick={() => openImageModal(waifu.image)}
+                            >
+                              {/* --- MODIFICATION: Added style for smooth scaling --- */}
+                              <img
+                                src={waifu.image}
+                                alt={waifu.name}
+                                className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-125"
+                                style={{ imageRendering: "auto" }}
+                              />
+                            </div>
+                          </td>
+                          <td className="p-2 text-lg align-middle">
+                            {waifu.name}
+                          </td>
+                          <td className="p-4 align-middle">
+                            {waifu.totalPoints}
+                          </td>
+                          <td className="p-4 align-middle">
+                            {waifu.rank1Ratio.toFixed(2)}%
+                          </td>
+                        </tr>
+                      ))}
+                </tbody>
+              </table>
+            </div>
+          </main>
+          <footer className="w-full text-center py-6">
+            {lastUpdated && (
+              <p className="text-sm text-gray-500">
+                Character Roster Updated: {lastUpdated}
+              </p>
+            )}
+          </footer>
+        </div>
+      ) : tournamentWinner ? (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+          <div className="text-5xl font-bold mb-4">Tournament Winner!</div>
+          <img
+            src={tournamentWinner.image}
+            alt={tournamentWinner.name}
+            className="w-96 h-96 object-cover object-top rounded-lg shadow-lg"
+          />
+          <div className="text-4xl mt-4 font-bold">{tournamentWinner.name}</div>
+          <div className="flex items-center space-x-4 mt-8">
             <button
-              onClick={handleSubmitResult}
-              disabled={submissionStatus === "submitting"}
-              className={`px-6 py-3 rounded-lg text-xl transition-colors 
-                ${
+              onClick={handleGoHome}
+              className="px-6 py-3 bg-gray-600 text-white rounded-lg text-xl hover:bg-gray-700 transition-colors"
+            >
+              Home
+            </button>
+            {submissionStatus !== "submitted" && (
+              <button
+                onClick={handleSubmitResult}
+                disabled={submissionStatus === "submitting"}
+                className={`px-6 py-3 rounded-lg text-xl transition-colors ${
                   submissionStatus === "submitting"
                     ? "bg-gray-500 cursor-not-allowed"
                     : ""
-                }
-                ${
+                } ${
                   submissionStatus === "idle"
                     ? "bg-blue-600 hover:bg-blue-700"
                     : ""
-                }
-                ${
+                } ${
                   submissionStatus === "error"
                     ? "bg-red-600 hover:bg-red-700"
                     : ""
                 }`}
-            >
-              {submitButtonText[submissionStatus]}
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  if (contestants.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white text-2xl">
-        Loading contestants...
-      </div>
-    );
-  }
-
-  const waifu1 = contestants[currentMatch * 2];
-  const waifu2 = contestants[currentMatch * 2 + 1];
-
-  if (!waifu1 || !waifu2) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white text-2xl">
-        Preparing next round...
-      </div>
-    );
-  }
-
-  // UX-IMPROVEMENT: Function to apply feedback styles
-  const getFeedbackClasses = (waifuId) => {
-    if (!selectionFeedback.winnerId) return "border-transparent"; // Default
-    if (waifuId === selectionFeedback.winnerId) return "border-green-500"; // Winner
-    if (waifuId === selectionFeedback.loserId) return "border-transparent"; // Loser
-    return "border-transparent";
-  };
-
-  return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* The header is where we add the new button */}
-      <header className="relative flex items-center justify-center text-center text-4xl font-bold py-4">
-        {/* UX-IMPROVEMENT: Add the "Home" button */}
-        <button
-          onClick={handleGoHome}
-          className="absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 bg-gray-700 text-white rounded-lg text-sm hover:bg-gray-600 transition-colors"
-        >
-          Home
-        </button>
-
-        <div>
-          {getRoundName(round)} - Match {currentMatch + 1} /{" "}
-          {contestants.length / 2}
-        </div>
-      </header>
-      <div className="w-full bg-gray-700 h-4 mb-4">
-        <div
-          className="bg-blue-500 h-4"
-          style={{
-            width: `${(currentMatch / (contestants.length / 2)) * 100}%`,
-          }}
-        ></div>
-      </div>
-      <div className="flex flex-1 min-h-0 relative">
-        {/* UX-IMPROVEMENT: Apply feedback styles to the voting container */}
-        <div
-          className={`flex-1 flex items-center justify-center cursor-pointer relative group overflow-hidden border-8 transition-all duration-300 ${getFeedbackClasses(
-            waifu1.id
-          )}`}
-          onClick={() => handleSelect(waifu1)}
-        >
-          <img
-            src={waifu1.image}
-            alt={waifu1.name}
-            className="w-full h-full object-contain transform transition-transform group-hover:scale-105"
-          />
-          <div className="absolute bottom-10 text-4xl font-bold text-white bg-black bg-opacity-50 p-4 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-            {waifu1.name}
+              >
+                {submissionStatus === "submitting"
+                  ? "Submitting..."
+                  : "Submit Result"}
+              </button>
+            )}
           </div>
-        </div>
-        <div
-          className={`flex-1 flex items-center justify-center cursor-pointer relative group overflow-hidden border-8 transition-all duration-300 ${getFeedbackClasses(
-            waifu2.id
-          )}`}
-          onClick={() => handleSelect(waifu2)}
-        >
-          <img
-            src={waifu2.image}
-            alt={waifu2.name}
-            className="w-full h-full object-contain transform transition-transform group-hover:scale-105"
-          />
-          <div className="absolute bottom-10 text-4xl font-bold text-white bg-black bg-opacity-50 p-4 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-            {waifu2.name}
-          </div>
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div
-            className="text-8xl font-extrabold text-white"
-            style={{
-              textShadow: "0 0 10px black, 0 0 20px black, 0 0 30px black",
-            }}
+            className={`fixed top-10 left-1/2 -translate-x-1/2 bg-green-500 text-white font-bold px-8 py-4 rounded-lg shadow-xl transition-opacity duration-500 ease-in-out ${
+              showSuccessPopup ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
           >
-            VS
+            Successfully submitted results!
           </div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="flex flex-col h-screen bg-gray-900 text-white">
+          <header className="relative flex items-center justify-center text-center text-4xl font-bold py-4">
+            <button
+              onClick={handleGoHome}
+              className="absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 bg-gray-700 text-white rounded-lg text-sm hover:bg-gray-600 transition-colors"
+            >
+              Home
+            </button>
+            <div>
+              {getRoundName()} - Match {currentMatch + 1} /{" "}
+              {contestants.length / 2}
+            </div>
+          </header>
+          <div className="w-full bg-gray-700 h-4 mb-4">
+            <div
+              className="bg-blue-500 h-4 transition-all duration-300 ease-in-out"
+              style={{
+                width: `${
+                  ((currentMatch + 1) / (contestants.length / 2)) * 100
+                }%`,
+              }}
+            ></div>
+          </div>
+          <div className="flex flex-1 min-h-0 relative">
+            {contestants[currentMatch * 2] &&
+            contestants[currentMatch * 2 + 1] ? (
+              <>
+                <div
+                  className={`flex-1 flex items-center justify-center cursor-pointer relative group overflow-hidden border-8 transition-all duration-300 ${
+                    selectionFeedback.winnerId ===
+                    contestants[currentMatch * 2].id
+                      ? "border-green-500"
+                      : "border-transparent"
+                  }`}
+                  onClick={() => handleSelect(contestants[currentMatch * 2])}
+                >
+                  <img
+                    src={contestants[currentMatch * 2].image}
+                    alt={contestants[currentMatch * 2].name}
+                    className="w-full h-full object-contain transform transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute bottom-10 text-4xl font-bold text-white bg-black bg-opacity-50 p-4 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                    {contestants[currentMatch * 2].name}
+                  </div>
+                </div>
+                <div
+                  className={`flex-1 flex items-center justify-center cursor-pointer relative group overflow-hidden border-8 transition-all duration-300 ${
+                    selectionFeedback.winnerId ===
+                    contestants[currentMatch * 2 + 1].id
+                      ? "border-green-500"
+                      : "border-transparent"
+                  }`}
+                  onClick={() =>
+                    handleSelect(contestants[currentMatch * 2 + 1])
+                  }
+                >
+                  <img
+                    src={contestants[currentMatch * 2 + 1].image}
+                    alt={contestants[currentMatch * 2 + 1].name}
+                    className="w-full h-full object-contain transform transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute bottom-10 text-4xl font-bold text-white bg-black bg-opacity-50 p-4 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                    {contestants[currentMatch * 2 + 1].name}
+                  </div>
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div
+                    className="text-8xl font-extrabold text-white"
+                    style={{
+                      textShadow:
+                        "0 0 10px black, 0 0 20px black, 0 0 30px black",
+                    }}
+                  >
+                    VS
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white text-2xl">
+                Preparing next round...
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

@@ -4,113 +4,141 @@ const express = require("express");
 const cors = require("cors");
 const sqlite3 = require("sqlite3").verbose();
 const { open } = require("sqlite");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 const app = express();
-app.use(cors()); // Allow requests from your frontend
-app.use(express.json()); // Allow server to read JSON from requests
+app.use(cors());
+app.use(express.json());
 
 const PORT = 3001;
+const DB_FILE = path.join(__dirname, "waifus.db");
+const WAIFUS_JSON = path.join(__dirname, "waifus.json");
 let db;
 
-// --- DATABASE SETUP ---
-// Connect to SQLite database
+// --- Point Distribution ---
+const POINTS = {
+  WINNER: 10,
+  RUNNER_UP: 3,
+  QUARTER_FINALIST: 1,
+};
+
+// --- DATABASE SETUP AND INITIALIZATION ---
 (async () => {
   db = await open({
-    filename: "./waifus.db",
+    filename: DB_FILE,
     driver: sqlite3.Database,
   });
 
-  // Create submissions table if it doesn't exist
-  // The userId is UNIQUE, so we can use INSERT OR REPLACE to handle new/updated votes
+  // --- MODIFICATION: waifus table is now for METADATA only ---
+  // It no longer stores points or win counts.
   await db.exec(`
-        CREATE TABLE IF NOT EXISTS submissions (
-            userId TEXT PRIMARY KEY,
-            waifuId INTEGER NOT NULL
-        )
-    `);
+    CREATE TABLE IF NOT EXISTS waifus (
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      image TEXT NOT NULL
+    )
+  `);
+
+  // --- MODIFICATION: This new table holds all user votes ---
+  // The userId is the PRIMARY KEY, ensuring one user can only have one entry.
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS submissions (
+        userId TEXT PRIMARY KEY,
+        winnerId INTEGER NOT NULL,
+        runnerUpId INTEGER,
+        quarterFinalistIds TEXT
+    )
+  `);
+
+  const count = await db.get("SELECT COUNT(id) as count FROM waifus");
+  if (count.count === 0) {
+    console.log("Database is empty. Populating from waifus.json...");
+    const waifuFile = await fs.readFile(WAIFUS_JSON, "utf-8");
+    const waifuData = JSON.parse(waifuFile);
+    const stmt = await db.prepare(
+      "INSERT INTO waifus (id, name, image) VALUES (?, ?, ?)"
+    );
+    for (const waifu of waifuData) {
+      await stmt.run(waifu.id, waifu.name, waifu.image);
+    }
+    await stmt.finalize();
+    console.log("Database populated successfully.");
+  }
 })();
-
-// --- REUSABLE FUNCTION TO GET WAIFU DATA ---
-const getWaifuData = () => {
-  const waifusPath = path.join(__dirname, "waifus.json");
-  const waifuFile = fs.readFileSync(waifusPath, "utf-8");
-  const waifuData = JSON.parse(waifuFile);
-
-  // Get the file's metadata, including its modification time
-  const stats = fs.statSync(waifusPath);
-  const lastUpdated = new Date(stats.mtime);
-
-  return {
-    characters: waifuData,
-    // Format the date nicely
-    lastUpdated: lastUpdated.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }),
-  };
-};
 
 // --- API ENDPOINTS ---
 
-// MODIFICATION: New endpoint to serve the character list
-app.get("/api/waifus", (req, res) => {
-  const { characters } = getWaifuData();
+app.get("/api/waifus", async (req, res) => {
+  const characters = await db.all("SELECT id, name, image FROM waifus");
   res.json(characters);
 });
 
-// 1. Endpoint to submit a vote
+// --- MODIFICATION: Handles overwriting user submissions ---
 app.post("/api/submit", async (req, res) => {
-  const { userId, waifuId } = req.body;
+  const { userId, winner, runnerUp, quarterFinalists } = req.body;
 
-  if (!userId || !waifuId) {
-    return res.status(400).json({ error: "userId and waifuId are required." });
+  if (!userId || !winner) {
+    return res
+      .status(400)
+      .json({ error: "userId and winner data are required." });
   }
 
-  // "INSERT OR REPLACE" will UPDATE the record if userId already exists, or INSERT if not.
-  // This perfectly handles the "override their previous result" requirement.
+  // Stringify the array of quarter-finalist IDs for storage
+  const qfIds = JSON.stringify(quarterFinalists.map((qf) => qf.id));
+
+  // "INSERT OR REPLACE" is the key to overwriting previous submissions.
   const stmt = await db.prepare(
-    "INSERT OR REPLACE INTO submissions (userId, waifuId) VALUES (?, ?)"
+    "INSERT OR REPLACE INTO submissions (userId, winnerId, runnerUpId, quarterFinalistIds) VALUES (?, ?, ?, ?)"
   );
-  await stmt.run(userId, waifuId);
+  await stmt.run(userId, winner.id, runnerUp ? runnerUp.id : null, qfIds);
 
   res.status(200).json({ message: "Submission saved successfully." });
 });
 
-// 2. Endpoint to get the rankings
+// --- MODIFICATION: Calculates rankings dynamically from submissions ---
 app.get("/api/rankings", async (req, res) => {
-  // MODIFICATION: Reads data from the local file system now
-  const { characters, lastUpdated } = getWaifuData();
+  const allWaifus = await db.all("SELECT * FROM waifus");
+  const allSubmissions = await db.all("SELECT * FROM submissions");
 
-  const totalSubmissions = await db.get(
-    "SELECT COUNT(*) as count FROM submissions"
-  );
-  const totalVotes = totalSubmissions.count;
+  const points = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
+  const wins = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
 
-  // Get the win count for each waifu
-  const winners = await db.all(
-    "SELECT waifuId, COUNT(waifuId) as wins FROM submissions GROUP BY waifuId"
-  );
+  for (const sub of allSubmissions) {
+    // Award points for winner
+    if (sub.winnerId) {
+      points[sub.winnerId] += POINTS.WINNER;
+      wins[sub.winnerId] += 1;
+    }
+    // Award points for runner-up
+    if (sub.runnerUpId) {
+      points[sub.runnerUpId] += POINTS.RUNNER_UP;
+    }
+    // Award points for quarter-finalists
+    if (sub.quarterFinalistIds) {
+      const qfIds = JSON.parse(sub.quarterFinalistIds);
+      for (const id of qfIds) {
+        points[id] += POINTS.QUARTER_FINALIST;
+      }
+    }
+  }
 
-  const rankings = characters.map((waifu) => {
-    const winnerData = winners.find((w) => w.waifuId === waifu.id);
-    const winCount = winnerData ? winnerData.wins : 0;
+  const totalVotes = allSubmissions.length;
+  const rankings = allWaifus.map((waifu) => ({
+    ...waifu,
+    totalPoints: points[waifu.id],
+    winCount: wins[waifu.id],
+    rank1Ratio: totalVotes > 0 ? (wins[waifu.id] / totalVotes) * 100 : 0,
+  }));
 
-    // Calculate Rank #1 Ratio
-    const rank1Ratio = totalVotes > 0 ? (winCount / totalVotes) * 100 : 0;
+  rankings.sort((a, b) => b.totalPoints - a.totalPoints);
 
-    // MODIFICATION: Removed the redundant 'winRate' property.
-    return {
-      ...waifu,
-      winCount: winCount,
-      rank1Ratio: rank1Ratio,
-    };
+  const stats = await fs.stat(WAIFUS_JSON);
+  const lastUpdated = new Date(stats.mtime).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
-  rankings.sort((a, b) => b.rank1Ratio - a.rank1Ratio);
-
-  // MODIFICATION: Send the new object shape
   res.json({
     rankings: rankings,
     lastUpdated: lastUpdated,
