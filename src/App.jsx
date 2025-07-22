@@ -374,9 +374,9 @@ const App = () => {
               </h1>
               <button
                 onClick={() => setGameStarted(true)}
-                className="px-8 py-4 bg-blue-600 text-white rounded-lg text-4xl hover:bg-blue-700 transition-colors hover:cursor-pointer"
+                className="w-40 h-40 bg-blue-600 text-white rounded-full text-5xl font-bold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-2xl transform hover:scale-110"
               >
-                Start
+                <span className="mb-2">Start!</span>
               </button>
             </div>
             <h2 className="text-3xl font-bold mb-4 mt-4">Global Rankings</h2>
@@ -395,26 +395,26 @@ const App = () => {
                               Points are awarded based on final tournament rank:
                               <ul className="mt-2 space-y-1">
                                 <li>
-                                  Winner (1st):{" "}
+                                  Winner (1st):
                                   <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
                                     +5 points
                                   </strong>
                                 </li>
                                 <li>
-                                  Runner-up (2nd):{" "}
+                                  Runner-up (2nd):
                                   <strong className="font-semibold bg-gray-300 px-1.5 py-0.5 rounded-md">
                                     +3 points
                                   </strong>
                                 </li>
                                 <li>
-                                  Semi-finalists (3rd-4th):{" "}
+                                  Semi-finalists (3rd-4th):
                                   <strong className="font-semibold bg-amber-600 px-1.5 py-0.5 rounded-md">
                                     +2 points
                                   </strong>
                                 </li>
                                 <li>
-                                  Quarter-finalists (5th-8th):{" "}
-                                  <strong className="font-semibold">
+                                  Quarter-finalists (5th-8th):
+                                  <strong className="font-semibold px-1.5 py-0.5 rounded-md">
                                     +1 point
                                   </strong>
                                 </li>
