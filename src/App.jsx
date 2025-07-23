@@ -14,7 +14,7 @@ const POINTS = {
 
 // --- Testing Variables ---
 // TEST_ON: Master switch for test mode. (1 = On, 0 = Off)
-const TEST_ON = 1;
+const TEST_ON = 0;
 // TEST_ROUND: Set to 8 for Quarter-Finals, 4 for Semi-Finals, etc.
 // This is only active if TEST_ON is 1.
 const TEST_ROUND = 8;
@@ -372,7 +372,8 @@ const App = () => {
               style={{ minHeight: "50vh" }}
             >
               <h1 className="text-5xl font-bold mb-8">
-                Blue Archive Waifu World Cup
+                Blue Archive Waifu World Cup{" "}
+                <span className="text-gray-500">(BETA)</span>
               </h1>
               <p className="text-2xl text-blue-300 mb-8">
                 Playable Students Edition
@@ -717,7 +718,7 @@ const App = () => {
                     alt={contestants[currentMatch * 2].name}
                     className="w-full h-full object-contain transform transition-transform group-hover:scale-105"
                   />
-                  <div className="absolute bottom-10 text-4xl font-bold text-white bg-black bg-opacity-50 p-4 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-10 text-4xl font-bold text-white bg-[rgba(0,0,0,0.6)] p-4 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                     {contestants[currentMatch * 2].name}
                   </div>
                 </div>
@@ -737,7 +738,7 @@ const App = () => {
                     alt={contestants[currentMatch * 2 + 1].name}
                     className="w-full h-full object-contain transform transition-transform group-hover:scale-105"
                   />
-                  <div className="absolute bottom-10 text-4xl font-bold text-white bg-black bg-opacity-50 p-4 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-10 text-4xl font-bold text-white bg-[rgba(0,0,0,0.6)] p-4 rounded opacity-0 group-hover:opacity-100 transition-opacity">
                     {contestants[currentMatch * 2 + 1].name}
                   </div>
                 </div>
