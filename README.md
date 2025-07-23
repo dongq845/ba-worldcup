@@ -1,4 +1,4 @@
-# Blue Archive Waifu World Cup
+# Blue Archive Waifu World Cup (BETA)
 
 This is a full-stack web application that allows users to vote for their favorite Blue Archive character in a dynamic, tournament-style bracket. It features a persistent global ranking system based on user submissions, a Node.js/Express backend, and a responsive React frontend built with Vite and Tailwind CSS.
 
@@ -47,7 +47,7 @@ Generated code
 ├── src/                  # The main frontend React application source
 │   ├── App.jsx           # The core application component and logic
 │   ├── main.jsx          # The entry point for the React app
-│   └── index.css         # Tailwind CSS directives
+│   └── style.css         # Tailwind CSS directives
 │
 ├── backend/              # The backend Node.js/Express server
 │   ├── waifus.json       # The single source of truth for all character data
