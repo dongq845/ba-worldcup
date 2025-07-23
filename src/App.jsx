@@ -44,6 +44,7 @@ const App = () => {
   const [quarterFinalists, setQuarterFinalists] = useState([]);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [modalImage, setModalImage] = useState(null);
+  const [totalStudents, setTotalStudents] = useState(0);
 
   useEffect(() => {
     if (gameStarted && tournamentPhase === "setup") {
@@ -102,6 +103,7 @@ const App = () => {
       .then((data) => {
         setRankings(data.rankings);
         setLastUpdated(data.lastUpdated);
+        setTotalStudents(data.totalStudents);
         setIsLoadingRankings(false);
       })
       .catch((error) => {
@@ -372,6 +374,9 @@ const App = () => {
               <h1 className="text-5xl font-bold mb-8">
                 Blue Archive Waifu World Cup
               </h1>
+              <p className="text-2xl text-blue-300 mb-8">
+                Playable Students Edition
+              </p>
               <button
                 onClick={() => setGameStarted(true)}
                 className="w-40 h-40 bg-blue-600 text-white rounded-full text-5xl font-bold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-2xl transform hover:scale-110"
@@ -525,9 +530,10 @@ const App = () => {
             </div>
           </main>
           <footer className="w-full text-center py-6">
-            {lastUpdated && (
+            {totalStudents > 0 && lastUpdated && (
               <p className="text-sm text-gray-500">
-                Character Roster Updated: {lastUpdated}
+                Featuring a roster of {totalStudents} students. | Roster
+                Updated: {lastUpdated}
               </p>
             )}
           </footer>

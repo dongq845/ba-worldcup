@@ -15,7 +15,6 @@ const DB_FILE = path.join(__dirname, "waifus.db");
 const WAIFUS_JSON = path.join(__dirname, "waifus.json");
 let db;
 
-// --- MODIFICATION: Point Distribution Updated ---
 const POINTS = {
   WINNER: 5,
   RUNNER_UP: 3,
@@ -38,7 +37,6 @@ const POINTS = {
     )
   `);
 
-  // --- MODIFICATION: Added semiFinalistIds to submissions table ---
   // If you are running this on an existing database, you may need to delete
   // the waifus.db file to allow the server to recreate it with the new column.
   await db.exec(`
@@ -74,7 +72,6 @@ app.get("/api/waifus", async (req, res) => {
   res.json(characters);
 });
 
-// --- MODIFICATION: Handles submission with semi-finalists ---
 app.post("/api/submit", async (req, res) => {
   const { userId, winner, runnerUp, semiFinalists, quarterFinalists } =
     req.body;
@@ -102,7 +99,6 @@ app.post("/api/submit", async (req, res) => {
   res.status(200).json({ message: "Submission saved successfully." });
 });
 
-// --- MODIFICATION: Calculates rankings with semi-finalist points ---
 app.get("/api/rankings", async (req, res) => {
   const allWaifus = await db.all("SELECT * FROM waifus");
   const allSubmissions = await db.all("SELECT * FROM submissions");
@@ -118,7 +114,6 @@ app.get("/api/rankings", async (req, res) => {
     if (sub.runnerUpId) {
       points[sub.runnerUpId] += POINTS.RUNNER_UP;
     }
-    // Award points for semi-finalists
     if (sub.semiFinalistIds) {
       const sfIds = JSON.parse(sub.semiFinalistIds);
       for (const id of sfIds) {
@@ -133,12 +128,13 @@ app.get("/api/rankings", async (req, res) => {
     }
   }
 
-  const totalVotes = allSubmissions.length;
+  const totalSubmissions = allSubmissions.length;
   const rankings = allWaifus.map((waifu) => ({
     ...waifu,
     totalPoints: points[waifu.id],
     winCount: wins[waifu.id],
-    rank1Ratio: totalVotes > 0 ? (wins[waifu.id] / totalVotes) * 100 : 0,
+    rank1Ratio:
+      totalSubmissions > 0 ? (wins[waifu.id] / totalSubmissions) * 100 : 0,
   }));
 
   rankings.sort((a, b) => b.totalPoints - a.totalPoints);
@@ -153,6 +149,7 @@ app.get("/api/rankings", async (req, res) => {
   res.json({
     rankings: rankings,
     lastUpdated: lastUpdated,
+    totalStudents: allWaifus.length,
   });
 });
 
