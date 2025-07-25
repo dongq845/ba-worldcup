@@ -52,7 +52,7 @@ The project is organized into a standard client-server monorepo structure.
 │   ├── package.json
 │   └── vite.config.js
 │
-├── backend/              # The backend Node.js/Express server
+├── server/               # The backend Node.js/Express server
 │   ├── waifus.json       # The single source of truth for all character data
 │   ├── waifus.db         # The SQLite database file (auto-generated)
 │   └── server.js         # The Express API server logic
