@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const DB_FILE = path.join(__dirname, "waifus.db");
 const WAIFUS_JSON = path.join(__dirname, "waifus.json");
 let db;
