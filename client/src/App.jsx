@@ -682,7 +682,7 @@ const App = () => {
           <header className="relative flex items-center justify-center text-center text-4xl font-bold py-4">
             <button
               onClick={handleGoHome}
-              className="absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 bg-gray-700 text-white rounded-lg text-sm hover:bg-gray-600 transition-colors"
+              className="hidden md:inline-block absolute left-4 top-1/2 -translate-y-1/2 px-4 py-2 bg-gray-700 text-white rounded-lg text-sm hover:bg-gray-600 transition-colors"
             >
               Home
             </button>
