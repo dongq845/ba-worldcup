@@ -36,28 +36,28 @@ This is a full-stack web application that allows users to vote for their favorit
 ## Project Structure
 
 The project is organized into a standard client-server monorepo structure.
-Generated code
 
 ```bash
-/my-waifu-cup-app/
+/ba-worldcup/
 │
-├── public/               # Static assets that are publicly served
-│   └── images/           # All character images
-│
-├── src/                  # The main frontend React application source
-│   ├── App.jsx           # The core application component and logic
-│   ├── main.jsx          # The entry point for the React app
-│   └── style.css         # Tailwind CSS directives
+├── client/               # The main frontend React application
+│   ├── public/
+│   │   └── images/       # All character images
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── style.css
+│   ├── .gitignore
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
 │
 ├── backend/              # The backend Node.js/Express server
 │   ├── waifus.json       # The single source of truth for all character data
 │   ├── waifus.db         # The SQLite database file (auto-generated)
 │   └── server.js         # The Express API server logic
 │
-├── .gitignore
-├── index.html            # The main HTML shell for the application
-├── package.json          # Frontend dependencies and scripts
-└── vite.config.js        # Vite configuration
+└── README.md
 ```
 
 ## How to Run Locally
@@ -78,11 +78,12 @@ cd ba-worldcup
 You need to install dependencies for both the frontend and the backend separately.
 
 ```bash
-# Install frontend dependencies (from the root directory)
+# Install frontend dependencies
+cd client
 npm install
 
 # Install backend dependencies
-cd backend
+cd ../backend
 npm install
 ```
 
@@ -105,7 +106,10 @@ node server.js
 **Terminal 2: Start the Frontend**
 
 ```bash
-# From the project's root directory (my-waifu-cup-app)
+# Navigate to the client folder
+cd client
+
+# Start the Vite development server
 npm run dev
 
 # This will automatically open the application in your browser,
