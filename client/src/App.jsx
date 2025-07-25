@@ -1,8 +1,9 @@
-// ba-worldcup/src/App.jsx
+// ba-worldcup/client/src/App.jsx
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { Tooltip } from "flowbite-react";
-
+// --- Get the API URL from environment variables ---
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const generateUUID = () => crypto.randomUUID();
 
 const POINTS = {
@@ -48,7 +49,7 @@ const App = () => {
 
   useEffect(() => {
     if (gameStarted && tournamentPhase === "setup") {
-      fetch("http://localhost:3001/api/waifus")
+      fetch(`${API_BASE_URL}/api/waifus`)
         .then((response) => response.json())
         .then((data) => {
           const shuffledWaifus = shuffleArray(data);
@@ -98,7 +99,7 @@ const App = () => {
     }
     setUserId(currentUserId);
 
-    fetch("http://localhost:3001/api/rankings")
+    fetch(`${API_BASE_URL}/api/rankings`)
       .then((res) => res.json())
       .then((data) => {
         setRankings(data.rankings);
@@ -183,7 +184,7 @@ const App = () => {
         quarterFinalists: quarterFinalLosers,
       };
 
-      fetch("http://localhost:3001/api/submit", {
+      fetch(`${API_BASE_URL}/api/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -192,7 +193,7 @@ const App = () => {
           if (response.ok) {
             setSubmissionStatus("submitted");
             setShowSuccessPopup(true);
-            return fetch("http://localhost:3001/api/rankings");
+            return fetch(`${API_BASE_URL}/api/rankings`);
           } else {
             throw new Error("Submission failed");
           }
