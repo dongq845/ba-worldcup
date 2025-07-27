@@ -106,198 +106,198 @@
   },
   {
     "id": 22,
-    "name": "Kinugawa Kasumi",
-    "image": "images/Kinugawa Kasumi.png"
-  },
-  {
-    "id": 23,
     "name": "Hanuma Makoto",
     "image": "images/Hanuma Makoto.png"
   },
   {
-    "id": 24,
+    "id": 23,
     "name": "Hatsune Miku (Collab)",
     "image": "images/Hatsune Miku (Collab).png"
   },
   {
-    "id": 25,
+    "id": 24,
     "name": "Hayase Yuuka",
     "image": "images/Hayase Yuuka.png"
   },
   {
-    "id": 26,
+    "id": 25,
     "name": "Himeki Meru",
     "image": "images/Himeki Meru.png"
   },
   {
-    "id": 27,
+    "id": 26,
     "name": "Himuro Sena",
     "image": "images/Himuro Sena.png"
   },
   {
-    "id": 28,
+    "id": 27,
     "name": "Hinomia Chinatsu",
     "image": "images/Hinomia Chinatsu.png"
   },
   {
-    "id": 29,
+    "id": 28,
     "name": "Ibaraki Yoshimi",
     "image": "images/Ibaraki Yoshimi.png"
   },
   {
-    "id": 30,
+    "id": 29,
     "name": "Ichinose Asuna",
     "image": "images/Ichinose Asuna.png"
   },
   {
-    "id": 31,
+    "id": 30,
     "name": "Igusa Haruka",
     "image": "images/Igusa Haruka.png"
   },
   {
-    "id": 32,
+    "id": 31,
     "name": "Ikekura Marina",
     "image": "images/Ikekura Marina.png"
   },
   {
-    "id": 33,
+    "id": 32,
     "name": "Imashino Misaki",
     "image": "images/Imashino Misaki.png"
   },
   {
-    "id": 34,
+    "id": 33,
     "name": "Iochi Mari",
     "image": "images/Iochi Mari.png"
   },
   {
-    "id": 35,
+    "id": 34,
     "name": "Isami Kaede",
     "image": "images/Isami Kaede.png"
   },
   {
-    "id": 36,
+    "id": 35,
     "name": "Izayoi Nonomi",
     "image": "images/Izayoi Nonomi.png"
   },
   {
-    "id": 37,
+    "id": 36,
     "name": "Izumimoto Eimi",
     "image": "images/Izumimoto Eimi.png"
   },
   {
-    "id": 38,
+    "id": 37,
     "name": "Joumae Saori",
     "image": "images/Joumae Saori.png"
   },
   {
-    "id": 39,
+    "id": 38,
     "name": "Kadenokouji Yukari",
     "image": "images/Kadenokouji Yukari.png"
   },
   {
-    "id": 40,
+    "id": 39,
     "name": "Kagami Chihiro",
     "image": "images/Kagami Chihiro.png"
   },
   {
-    "id": 41,
+    "id": 40,
     "name": "Kakudate Karin",
     "image": "images/Kakudate Karin.png"
   },
   {
-    "id": 42,
+    "id": 41,
     "name": "Kasuga Tsubaki",
     "image": "images/Kasuga Tsubaki.png"
   },
   {
-    "id": 43,
+    "id": 42,
     "name": "Kasumizawa Miyu",
     "image": "images/Kasumizawa Miyu.png"
   },
   {
-    "id": 44,
+    "id": 43,
     "name": "Kawawa Shizuko",
     "image": "images/Kawawa Shizuko.png"
   },
   {
-    "id": 45,
+    "id": 44,
     "name": "Kayama Reijo",
     "image": "images/Kayama Reijo.png"
   },
   {
-    "id": 46,
+    "id": 45,
     "name": "Kazekura Moe",
     "image": "images/Kazekura Moe.png"
   },
   {
-    "id": 47,
+    "id": 46,
     "name": "Kenzaki Tsurugi",
     "image": "images/Kenzaki Tsurugi.png"
   },
   {
-    "id": 48,
+    "id": 47,
     "name": "Kinugawa Kasumi",
     "image": "images/Kinugawa Kasumi.png"
   },
   {
-    "id": 49,
+    "id": 48,
     "name": "Kirifuji Nagisa",
     "image": "images/Kirifuji Nagisa.png"
   },
   {
-    "id": 50,
+    "id": 49,
     "name": "Kiryuu Kikyou",
     "image": "images/Kiryuu Kikyou.png"
   },
   {
-    "id": 51,
+    "id": 50,
     "name": "Konoe Mina",
     "image": "images/Konoe Mina.png"
   },
   {
-    "id": 52,
+    "id": 51,
     "name": "Konuri Maki",
     "image": "images/Konuri Maki.png"
   },
   {
-    "id": 53,
+    "id": 52,
     "name": "Kosaka Wakamo",
     "image": "images/Kosaka Wakamo.png"
   },
   {
-    "id": 54,
+    "id": 53,
     "name": "Kozeki Ui",
     "image": "images/Kozeki Ui.png"
   },
   {
-    "id": 55,
+    "id": 54,
     "name": "Kuda Izuna",
     "image": "images/Kuda Izuna.png"
   },
   {
-    "id": 56,
+    "id": 55,
     "name": "Kurimura Airi",
     "image": "images/Kurimura Airi.png"
   },
   {
-    "id": 57,
+    "id": 56,
     "name": "Kurodate Haruna",
     "image": "images/Kurodate Haruna.png"
   },
   {
-    "id": 58,
+    "id": 57,
     "name": "Kuromi Serika",
     "image": "images/Kuromi Serika.png"
   },
   {
-    "id": 59,
+    "id": 58,
     "name": "Kurosaki Koyuki",
     "image": "images/Kurosaki Koyuki.png"
   },
   {
-    "id": 60,
+    "id": 59,
     "name": "Kuwakami Kaho",
     "image": "images/Kuwakami Kaho.png"
+  },
+  {
+    "id": 60,
+    "name": "Kyougoku Satsuki",
+    "image": "images/Kyougoku Satsuki.png"
   },
   {
     "id": 61,
@@ -546,8 +546,8 @@
   },
   {
     "id": 110,
-    "name": "Tendou Alice",
-    "image": "images/Tendou Alice.png"
+    "name": "Tendou Aris",
+    "image": "images/Tendou Aris.png"
   },
   {
     "id": 111,
