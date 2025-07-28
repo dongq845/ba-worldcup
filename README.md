@@ -2,7 +2,7 @@
 
 This is a full-stack web application that allows users to vote for their favorite Blue Archive character in a dynamic, tournament-style bracket. It features a persistent global ranking system based on user submissions, a Node.js/Express backend, and a responsive React frontend built with Vite and Tailwind CSS.
 
-(To add a screenshot: take a picture of your running application, upload it to a site like Imgur, and replace the URL above with your image link.)
+![Screenshot of the application](public/images/screenshot.png)
 
 ## Core Features
 
@@ -29,13 +29,11 @@ This is a full-stack web application that allows users to vote for their favorit
 
 ## Tech Stack
 
-- **Frontend:** React, Vite, Tailwind CSS
+- **Frontend:** React, Vite, Tailwind CSS, Flowbite-React
 - **Backend:** Node.js, Express.js
-- **Database:** SQLite
+- **Database:** PostgreSQL
 
 ## Project Structure
-
-The project is organized into a standard client-server monorepo structure.
 
 ```bash
 /ba-worldcup/
@@ -47,14 +45,17 @@ The project is organized into a standard client-server monorepo structure.
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── style.css
+│   ├── .env.development
+│   ├── .env.production
 │   ├── .gitignore
 │   ├── index.html
 │   ├── package.json
 │   └── vite.config.js
 │
 ├── server/               # The backend Node.js/Express server
+│   ├── .env
 │   ├── waifus.json       # The single source of truth for all character data
-│   ├── waifus.db         # The SQLite database file (auto-generated)
+│   ├── package.json
 │   └── server.js         # The Express API server logic
 │
 └── README.md
@@ -83,11 +84,35 @@ cd client
 npm install
 
 # Install backend dependencies
-cd ../backend
+cd ../server
 npm install
 ```
 
-### 3. Run the Application
+### 3. Environment Variables
+
+This project requires environment variables to connect the frontend to the backend and the backend to the database.
+
+**Backend Setup:**
+
+In the `/server` folder, create a new file named `.env`. This file will hold the connection string for your database.
+
+```
+# /server/.env
+DATABASE_URL="postgresql://<user>:<password>@<host>:<port>/<database>"
+```
+
+**Frontend Setup:**
+
+In the `/client` folder, you will need to create a file named `.env.development`.
+
+```
+# /client/.env.development
+VITE_API_URL=http://localhost:3001
+```
+
+_(For production, you would also create a `.env.production` file pointing to your deployed server's URL, e.g., `VITE_API_BASE_URL=https://ba-worldcup-server.onrender.com`)_
+
+### 4. Run the Application
 
 This project requires **two terminals** running at the same time: one for the backend server and one for the frontend development server.
 
@@ -95,12 +120,13 @@ This project requires **two terminals** running at the same time: one for the ba
 
 ```bash
 # Navigate to the backend folder
-cd backend
+cd server
 
 # Start the Node.js server
 node server.js
 
 # You should see: "Server is running on http://localhost:3001"
+# and "Successfully connected to PostgreSQL database."
 ```
 
 **Terminal 2: Start the Frontend**
