@@ -1,6 +1,8 @@
 # Blue Archive Waifu World Cup (BETA)
 
-This is a full-stack web application that allows users to vote for their favorite Blue Archive character in a dynamic, tournament-style bracket. It features a persistent global ranking system based on user submissions, a Node.js/Express backend, and a responsive React frontend built with Vite and Tailwind CSS.
+A full-stack web application that lets you vote for your favorite Blue Archive character in a dynamic, tournament-style bracket and contributes to a global ranking.
+
+### Try it live at [baworldcup.com!](https://baworldcup.com)
 
 ![Screenshot of the application](https://github.com/user-attachments/assets/acb3f604-af66-464e-b8a3-3f86d98db8c8)
 
@@ -38,25 +40,18 @@ This is a full-stack web application that allows users to vote for their favorit
 ```bash
 /ba-worldcup/
 │
-├── client/               # The main frontend React application
+├── client/           # React frontend application
 │   ├── public/
-│   │   └── images/       # All character images
 │   ├── src/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── style.css
-│   ├── .env.development
-│   ├── .env.production
-│   ├── .gitignore
+│   │   ├── App.jsx     # Main application component
+│   │   └── ...
 │   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
+│   └── package.json
 │
-├── server/               # The backend Node.js/Express server
-│   ├── .env
-│   ├── waifus.json       # The single source of truth for all character data
-│   ├── package.json
-│   └── server.js         # The Express API server logic
+├── server/           # Node.js/Express backend API
+│   ├── server.js     # Express server and API logic
+│   ├── waifus.json   # Source of truth for all character data
+│   └── package.json
 │
 └── README.md
 ```
