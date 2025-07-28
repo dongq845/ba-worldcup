@@ -134,6 +134,31 @@ const App = () => {
     }
   }, [showSuccessPopup]);
 
+  useEffect(() => {
+    // --- PRELOADING LOGIC TO MAKE MATCHES FEEL INSTANT ---
+    // Preload images for the *next* matchup to reduce loading lag.
+    if (!gameStarted || tournamentWinner) return;
+
+    const nextMatchIndex = currentMatch + 1;
+    // Check if a next match actually exists in the current round
+    if (nextMatchIndex * 2 < contestants.length) {
+      const contestant1_next = contestants[nextMatchIndex * 2];
+      const contestant2_next = contestants[nextMatchIndex * 2 + 1];
+
+      // Preload images by creating new Image objects in memory.
+      // The browser downloads the image into its cache. When the next match's <img>
+      // tags are rendered with the same 'src', they load instantly from the cache.
+      if (contestant1_next?.image) {
+        const img1 = new Image();
+        img1.src = contestant1_next.image;
+      }
+      if (contestant2_next?.image) {
+        const img2 = new Image();
+        img2.src = contestant2_next.image;
+      }
+    }
+  }, [currentMatch, contestants, gameStarted, tournamentWinner]); // This effect runs whenever the match changes
+
   const isPowerOfTwo = (n) => n > 0 && (n & (n - 1)) === 0;
 
   const setupTournament = (allCharacters) => {
