@@ -9,7 +9,11 @@ const { Pool } = require("pg"); // --- MODIFICATION: Replaced 'sqlite3' and 'sql
 const app = express();
 
 // --- CORS Configuration (No changes needed here) ---
-const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:5173"];
+const allowedOrigins = [
+  "https://baworldcup.com", // <-- ADD YOUR NEW DOMAIN HERE
+  process.env.FRONTEND_URL, // Keep the old one for a bit, just in case
+  "http://localhost:5173", // Keep this for local development
+];
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
