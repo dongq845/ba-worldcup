@@ -2,21 +2,16 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const sqlite3 = require("sqlite3").verbose();
-const { open } = require("sqlite");
 const fs = require("fs").promises;
 const path = require("path");
+const { Pool } = require("pg"); // --- MODIFICATION: Replaced 'sqlite3' and 'sqlite' with 'pg'
+
 const app = express();
 
-// --- CORS Configuration ---
-const allowedOrigins = [
-  process.env.FRONTEND_URL, // The URL of your deployed frontend on Render
-  "http://localhost:5173", // Keep this for local development
-];
-
+// --- CORS Configuration (No changes needed here) ---
+const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:5173"];
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg =
@@ -31,9 +26,16 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
-const DB_FILE = path.join(__dirname, "waifus.db");
 const WAIFUS_JSON = path.join(__dirname, "waifus.json");
-let db;
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  // When in production on Render, we need to use SSL but can allow self-signed certificates.
+  // When running locally, we must also use SSL to connect to the remote Render DB.
+  ssl: isProduction ? { rejectUnauthorized: false } : true,
+});
 
 const POINTS = {
   WINNER: 5,
@@ -42,54 +44,67 @@ const POINTS = {
   QUARTER_FINALIST: 1,
 };
 
-// --- DATABASE SETUP AND INITIALIZATION ---
+// --- MODIFICATION: DATABASE SETUP AND INITIALIZATION for PostgreSQL ---
 (async () => {
-  db = await open({
-    filename: DB_FILE,
-    driver: sqlite3.Database,
-  });
+  try {
+    const client = await pool.connect();
+    console.log("Successfully connected to PostgreSQL database.");
 
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS waifus (
-      id INTEGER PRIMARY KEY,
-      name TEXT NOT NULL,
-      image TEXT NOT NULL
-    )
-  `);
+    // Create waifus table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS waifus (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        image TEXT NOT NULL
+      )
+    `);
 
-  // If you are running this on an existing database, you may need to delete
-  // the waifus.db file to allow the server to recreate it with the new column.
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS submissions (
-        userId TEXT PRIMARY KEY,
-        winnerId INTEGER NOT NULL,
-        runnerUpId INTEGER,
-        semiFinalistIds TEXT,
-        quarterFinalistIds TEXT
-    )
-  `);
+    // Create submissions table with improved schema for PostgreSQL
+    // We use INTEGER[] (an array of integers) which is more efficient than storing JSON strings.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS submissions (
+          userId TEXT PRIMARY KEY,
+          winnerId INTEGER NOT NULL,
+          runnerUpId INTEGER,
+          semiFinalistIds INTEGER[],
+          quarterFinalistIds INTEGER[]
+      )
+    `);
 
-  const count = await db.get("SELECT COUNT(id) as count FROM waifus");
-  if (count.count === 0) {
-    console.log("Database is empty. Populating from waifus.json...");
-    const waifuFile = await fs.readFile(WAIFUS_JSON, "utf-8");
-    const waifuData = JSON.parse(waifuFile);
-    const stmt = await db.prepare(
-      "INSERT INTO waifus (id, name, image) VALUES (?, ?, ?)"
+    // Check if the waifus table is empty and populate it
+    const countResult = await client.query(
+      "SELECT COUNT(id) as count FROM waifus"
     );
-    for (const waifu of waifuData) {
-      await stmt.run(waifu.id, waifu.name, waifu.image);
+    if (countResult.rows[0].count === "0") {
+      console.log("Database is empty. Populating from waifus.json...");
+      const waifuFile = await fs.readFile(WAIFUS_JSON, "utf-8");
+      const waifuData = JSON.parse(waifuFile);
+
+      for (const waifu of waifuData) {
+        // --- MODIFICATION: Using parameterized queries for PostgreSQL ($1, $2, etc.)
+        await client.query(
+          "INSERT INTO waifus (id, name, image) VALUES ($1, $2, $3)",
+          [waifu.id, waifu.name, waifu.image]
+        );
+      }
+      console.log("Database populated successfully.");
     }
-    await stmt.finalize();
-    console.log("Database populated successfully.");
+    client.release();
+  } catch (err) {
+    console.error("Failed to connect or setup the database:", err);
+    process.exit(1); // Exit if DB connection fails
   }
 })();
 
 // --- API ENDPOINTS ---
 
 app.get("/api/waifus", async (req, res) => {
-  const characters = await db.all("SELECT id, name, image FROM waifus");
-  res.json(characters);
+  try {
+    const characters = await pool.query("SELECT id, name, image FROM waifus");
+    res.json(characters.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch characters." });
+  }
 });
 
 app.post("/api/submit", async (req, res) => {
@@ -102,75 +117,97 @@ app.post("/api/submit", async (req, res) => {
       .json({ error: "userId and winner data are required." });
   }
 
-  const sfIds = JSON.stringify(semiFinalists.map((sf) => sf.id));
-  const qfIds = JSON.stringify(quarterFinalists.map((qf) => qf.id));
+  // --- MODIFICATION: Prepare arrays directly for PostgreSQL INTEGER[] type
+  const sfIds = semiFinalists.map((sf) => sf.id);
+  const qfIds = quarterFinalists.map((qf) => qf.id);
 
-  const stmt = await db.prepare(
-    "INSERT OR REPLACE INTO submissions (userId, winnerId, runnerUpId, semiFinalistIds, quarterFinalistIds) VALUES (?, ?, ?, ?, ?)"
-  );
-  await stmt.run(
-    userId,
-    winner.id,
-    runnerUp ? runnerUp.id : null,
-    sfIds,
-    qfIds
-  );
+  // --- MODIFICATION: This is the PostgreSQL equivalent of "INSERT OR REPLACE" ---
+  // It attempts to INSERT, and if a row with the same userId already exists (ON CONFLICT),
+  // it will UPDATE the existing row instead.
+  const queryText = `
+    INSERT INTO submissions (userId, winnerId, runnerUpId, semiFinalistIds, quarterFinalistIds)
+    VALUES ($1, $2, $3, $4, $5)
+    ON CONFLICT (userId) DO UPDATE SET
+      winnerId = EXCLUDED.winnerId,
+      runnerUpId = EXCLUDED.runnerUpId,
+      semiFinalistIds = EXCLUDED.semiFinalistIds,
+      quarterFinalistIds = EXCLUDED.quarterFinalistIds;
+  `;
 
-  res.status(200).json({ message: "Submission saved successfully." });
+  try {
+    await pool.query(queryText, [
+      userId,
+      winner.id,
+      runnerUp ? runnerUp.id : null,
+      sfIds,
+      qfIds,
+    ]);
+    res.status(200).json({ message: "Submission saved successfully." });
+  } catch (err) {
+    console.error("Failed to save submission:", err);
+    res.status(500).json({ error: "Failed to save submission." });
+  }
 });
 
 app.get("/api/rankings", async (req, res) => {
-  const allWaifus = await db.all("SELECT * FROM waifus");
-  const allSubmissions = await db.all("SELECT * FROM submissions");
+  try {
+    const allWaifusRes = await pool.query("SELECT * FROM waifus");
+    const allSubmissionsRes = await pool.query("SELECT * FROM submissions");
 
-  const points = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
-  const wins = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
+    const allWaifus = allWaifusRes.rows;
+    const allSubmissions = allSubmissionsRes.rows;
 
-  for (const sub of allSubmissions) {
-    if (sub.winnerId) {
-      points[sub.winnerId] += POINTS.WINNER;
-      wins[sub.winnerId] += 1;
-    }
-    if (sub.runnerUpId) {
-      points[sub.runnerUpId] += POINTS.RUNNER_UP;
-    }
-    if (sub.semiFinalistIds) {
-      const sfIds = JSON.parse(sub.semiFinalistIds);
-      for (const id of sfIds) {
-        if (points[id] !== undefined) points[id] += POINTS.SEMI_FINALIST;
+    const points = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
+    const wins = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
+
+    for (const sub of allSubmissions) {
+      if (sub.winnerid) {
+        points[sub.winnerid] += POINTS.WINNER;
+        wins[sub.winnerid] += 1;
+      }
+      if (sub.runnerupid) {
+        points[sub.runnerupid] += POINTS.RUNNER_UP;
+      }
+      // PostgreSQL returns arrays directly, no need for JSON.parse
+      if (sub.semifinalistids) {
+        for (const id of sub.semifinalistids) {
+          if (points[id] !== undefined) points[id] += POINTS.SEMI_FINALIST;
+        }
+      }
+      if (sub.quarterfinalistids) {
+        for (const id of sub.quarterfinalistids) {
+          if (points[id] !== undefined) points[id] += POINTS.QUARTER_FINALIST;
+        }
       }
     }
-    if (sub.quarterFinalistIds) {
-      const qfIds = JSON.parse(sub.quarterFinalistIds);
-      for (const id of qfIds) {
-        if (points[id] !== undefined) points[id] += POINTS.QUARTER_FINALIST;
-      }
-    }
+
+    const totalSubmissions = allSubmissions.length;
+    const rankings = allWaifus.map((waifu) => ({
+      ...waifu,
+      totalPoints: points[waifu.id],
+      winCount: wins[waifu.id],
+      rank1Ratio:
+        totalSubmissions > 0 ? (wins[waifu.id] / totalSubmissions) * 100 : 0,
+    }));
+
+    rankings.sort((a, b) => b.totalPoints - a.totalPoints);
+
+    const stats = await fs.stat(WAIFUS_JSON);
+    const lastUpdated = new Date(stats.mtime).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    res.json({
+      rankings: rankings,
+      lastUpdated: lastUpdated,
+      totalStudents: allWaifus.length,
+    });
+  } catch (err) {
+    console.error("Failed to generate rankings:", err);
+    res.status(500).json({ error: "Failed to generate rankings." });
   }
-
-  const totalSubmissions = allSubmissions.length;
-  const rankings = allWaifus.map((waifu) => ({
-    ...waifu,
-    totalPoints: points[waifu.id],
-    winCount: wins[waifu.id],
-    rank1Ratio:
-      totalSubmissions > 0 ? (wins[waifu.id] / totalSubmissions) * 100 : 0,
-  }));
-
-  rankings.sort((a, b) => b.totalPoints - a.totalPoints);
-
-  const stats = await fs.stat(WAIFUS_JSON);
-  const lastUpdated = new Date(stats.mtime).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  res.json({
-    rankings: rankings,
-    lastUpdated: lastUpdated,
-    totalStudents: allWaifus.length,
-  });
 });
 
 app.listen(PORT, () => {
