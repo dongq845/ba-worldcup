@@ -2,7 +2,7 @@
 
 This is a full-stack web application that allows users to vote for their favorite Blue Archive character in a dynamic, tournament-style bracket. It features a persistent global ranking system based on user submissions, a Node.js/Express backend, and a responsive React frontend built with Vite and Tailwind CSS.
 
-![Screenshot of the application](public/images/screenshot.png)
+![Screenshot of the application](https://github.com/user-attachments/assets/acb3f604-af66-464e-b8a3-3f86d98db8c8)
 
 ## Core Features
 
