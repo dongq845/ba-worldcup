@@ -522,12 +522,14 @@ const App = () => {
                               className="w-24 h-24 rounded-full overflow-hidden group cursor-pointer"
                               onClick={() => openImageModal(waifu.image)}
                             >
-                              <LazyLoadImage
-                                alt={waifu.name} // Alt text for accessibility
-                                src={waifu.image} // The actual image URL
-                                effect="blur" // This adds the nice blur-up effect
-                                className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-125"
-                              />
+                              <div className="transition-transform duration-300 group-hover:scale-125">
+                                <LazyLoadImage
+                                  alt={waifu.name} // Alt text for accessibility
+                                  src={waifu.image} // The actual image URL
+                                  effect="blur" // This adds the nice blur-up effect
+                                  className="w-full h-full object-cover object-top"
+                                />
+                              </div>
                             </div>
                           </td>
                           <td className="p-3 text-lg align-middle">
@@ -783,7 +785,7 @@ const App = () => {
                 </div>
               </>
             ) : (
-              <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white text-2xl">
+              <div className="w-full flex items-center justify-center text-white text-2xl">
                 Preparing next round...
               </div>
             )}
