@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { Tooltip } from "flowbite-react";
-// --- Get the API URL from environment variables ---
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const generateUUID = () => crypto.randomUUID();
 
@@ -496,9 +497,10 @@ const App = () => {
                               className="w-24 h-24 rounded-full overflow-hidden group cursor-pointer"
                               onClick={() => openImageModal(waifu.image)}
                             >
-                              <img
-                                src={waifu.image}
-                                alt={waifu.name}
+                              <LazyLoadImage
+                                alt={waifu.name} // Alt text for accessibility
+                                src={waifu.image} // The actual image URL
+                                effect="blur" // This adds the nice blur-up effect
                                 className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-125"
                               />
                             </div>
