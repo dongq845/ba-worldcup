@@ -392,182 +392,194 @@ const App = () => {
       )}
 
       {!gameStarted ? (
-        <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-          <main className="flex-grow flex flex-col items-center justify-center p-4">
-            <div
-              className="flex flex-col items-center justify-center text-center"
-              style={{ minHeight: "50vh" }}
-            >
-              <h1 className="text-5xl font-bold mb-8">
-                Blue Archive Waifu World Cup{" "}
-                <span className="text-gray-500">(BETA)</span>
-              </h1>
-              <p className="text-2xl text-blue-300 mb-8">
-                Playable Students Edition
-              </p>
-              <button
-                onClick={() => setGameStarted(true)}
-                className="w-40 h-40 bg-blue-600 text-white rounded-full text-5xl font-bold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-2xl transform hover:scale-110"
+        <div
+          className="flex flex-col min-h-screen bg-gray-900 text-white"
+          style={{
+            backgroundImage: `url('https://res.cloudinary.com/doi21aa5i/image/upload/v1753803197/blue_archive_bg1_gwu4aw.png')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "fixed",
+          }}
+        >
+          <div className="flex flex-col min-h-screen bg-black/90">
+            <main className="flex-grow flex flex-col items-center justify-center p-4">
+              <div
+                className="flex flex-col items-center justify-center text-center"
+                style={{ minHeight: "50vh" }}
               >
-                <span className="mb-2">Start!</span>
-              </button>
-            </div>
-            <h2 className="text-3xl font-bold mb-4 mt-4">Global Rankings</h2>
-            <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg overflow-auto">
-              <table className="w-full text-left table-fixed">
-                <thead className="bg-gray-700">
-                  <tr>
-                    <th className="p-3 w-16 text-left">Rank</th>
-                    <th className="p-3 w-24 text-left">Image</th>
-                    <th className="p-3 w-32 text-left">Name</th>
-                    <th className="p-3 w-20 text-left">
-                      <div className="inline-block">
-                        <Tooltip
-                          content={
-                            <div className="text-left">
-                              Points are awarded based on final tournament rank:
-                              <ul className="mt-2 space-y-1">
-                                <li>
-                                  Winner (1st):
-                                  <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
-                                    +5 points
-                                  </strong>
-                                </li>
-                                <li>
-                                  Runner-up (2nd):
-                                  <strong className="font-semibold bg-gray-300 px-1.5 py-0.5 rounded-md">
-                                    +3 points
-                                  </strong>
-                                </li>
-                                <li>
-                                  Semi-finalists (3rd-4th):
-                                  <strong className="font-semibold bg-amber-600 px-1.5 py-0.5 rounded-md">
-                                    +2 points
-                                  </strong>
-                                </li>
-                                <li>
-                                  Quarter-finalists (5th-8th):
-                                  <strong className="font-semibold px-1.5 py-0.5 rounded-md">
-                                    +1 point
-                                  </strong>
-                                </li>
-                              </ul>
-                            </div>
-                          }
-                          style="light"
-                        >
-                          <span className="cursor-help border-b-2 border-dotted border-gray-400">
-                            Total Points
-                          </span>
-                        </Tooltip>
-                      </div>
-                    </th>
-                    <th className="p-3 w-32 text-left">
-                      <div className="inline-block">
-                        <Tooltip
-                          content={
-                            <span>
-                              The percentage of tournaments finished in
-                              <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
-                                first place
-                              </strong>
+                <h1 className="text-5xl font-bold mb-8">
+                  Blue Archive Waifu World Cup{" "}
+                  <span className="text-gray-500">(BETA)</span>
+                </h1>
+                <p className="text-2xl text-blue-300 mb-8">
+                  Playable Students Edition
+                </p>
+                <button
+                  onClick={() => setGameStarted(true)}
+                  className="w-40 h-40 bg-blue-600 text-white rounded-full text-5xl font-bold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-2xl transform hover:scale-110"
+                >
+                  <span className="mb-2">Start!</span>
+                </button>
+              </div>
+              <h2 className="text-3xl font-bold mb-4 mt-4">Global Rankings</h2>
+              <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg overflow-auto">
+                <table className="w-full text-left table-fixed">
+                  <thead className="bg-gray-700">
+                    <tr>
+                      <th className="p-3 w-16 text-left">Rank</th>
+                      <th className="p-3 w-24 text-left">Image</th>
+                      <th className="p-3 w-32 text-left">Name</th>
+                      <th className="p-3 w-20 text-left">
+                        <div className="inline-block">
+                          <Tooltip
+                            content={
+                              <div className="text-left">
+                                Points are awarded based on final tournament
+                                rank:
+                                <ul className="mt-2 space-y-1">
+                                  <li>
+                                    Winner (1st):
+                                    <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
+                                      +5 points
+                                    </strong>
+                                  </li>
+                                  <li>
+                                    Runner-up (2nd):
+                                    <strong className="font-semibold bg-gray-300 px-1.5 py-0.5 rounded-md">
+                                      +3 points
+                                    </strong>
+                                  </li>
+                                  <li>
+                                    Semi-finalists (3rd-4th):
+                                    <strong className="font-semibold bg-amber-600 px-1.5 py-0.5 rounded-md">
+                                      +2 points
+                                    </strong>
+                                  </li>
+                                  <li>
+                                    Quarter-finalists (5th-8th):
+                                    <strong className="font-semibold px-1.5 py-0.5 rounded-md">
+                                      +1 point
+                                    </strong>
+                                  </li>
+                                </ul>
+                              </div>
+                            }
+                            style="light"
+                          >
+                            <span className="cursor-help border-b-2 border-dotted border-gray-400">
+                              Total Points
                             </span>
-                          }
-                          style="light"
-                        >
-                          <span className="cursor-help border-b-2 border-dotted border-gray-400">
-                            Win Rate
-                          </span>
-                        </Tooltip>
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {isLoadingRankings
-                    ? [...Array(5)].map((_, i) => (
-                        <tr
-                          key={i}
-                          className="border-b border-gray-700 last:border-b-0"
-                        >
-                          {/* --- MODIFICATION: Padding and placeholder sizes updated --- */}
-                          <td className="p-3 align-middle text-center">
-                            <div className="h-6 w-6 bg-gray-700 rounded animate-pulse mx-auto"></div>
-                          </td>
-                          <td className="p-1 align-middle">
-                            <div className="w-24 h-24 bg-gray-700 rounded-full animate-pulse mx-auto"></div>
-                          </td>
-                          <td className="p-3 align-middle">
-                            <div className="h-6 w-32 bg-gray-700 rounded animate-pulse"></div>
-                          </td>
-                          <td className="p-3 align-middle">
-                            <div className="h-6 w-20 bg-gray-700 rounded animate-pulse"></div>
-                          </td>
-                          <td className="p-3 align-middle">
-                            <div className="h-6 w-full bg-gray-700 rounded-full animate-pulse"></div>
-                          </td>
-                        </tr>
-                      ))
-                    : rankings.map((waifu, index) => (
-                        <tr
-                          key={waifu.id}
-                          className="border-b border-gray-700 last:border-b-0 hover:bg-gray-700/50"
-                        >
-                          <td className="p-3 font-bold text-xl align-middle">
-                            {index + 1}
-                          </td>
-                          <td className="p-1 align-middle">
-                            {/* --- MODIFICATION: Image container size increased --- */}
-                            <div
-                              className="w-24 h-24 rounded-full overflow-hidden group cursor-pointer"
-                              onClick={() => openImageModal(waifu.image)}
-                            >
-                              <div className="transition-transform duration-300 group-hover:scale-125">
-                                <LazyLoadImage
-                                  alt={waifu.name} // Alt text for accessibility
-                                  src={waifu.image} // The actual image URL
-                                  effect="blur" // This adds the nice blur-up effect
-                                  className="w-full h-full object-cover object-top"
-                                />
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-3 text-lg align-middle">
-                            {waifu.name}
-                          </td>
-                          <td className="p-3 text-lg align-middle text-amber-300">
-                            {waifu.totalPoints}
-                          </td>
-                          {/* --- MODIFICATION: Replaced text with a progress bar --- */}
-                          <td className="p-3 align-middle">
-                            <div className="relative w-full bg-gray-700 rounded-full h-6 shadow-inner">
-                              {/* Inner progress bar */}
+                          </Tooltip>
+                        </div>
+                      </th>
+                      <th className="p-3 w-32 text-left">
+                        <div className="inline-block">
+                          <Tooltip
+                            content={
+                              <span>
+                                The percentage of tournaments finished in
+                                <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
+                                  first place
+                                </strong>
+                              </span>
+                            }
+                            style="light"
+                          >
+                            <span className="cursor-help border-b-2 border-dotted border-gray-400">
+                              Win Rate
+                            </span>
+                          </Tooltip>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isLoadingRankings
+                      ? [...Array(5)].map((_, i) => (
+                          <tr
+                            key={i}
+                            className="border-b border-gray-700 last:border-b-0"
+                          >
+                            {/* --- MODIFICATION: Padding and placeholder sizes updated --- */}
+                            <td className="p-3 align-middle text-center">
+                              <div className="h-6 w-6 bg-gray-700 rounded animate-pulse mx-auto"></div>
+                            </td>
+                            <td className="p-1 align-middle">
+                              <div className="w-24 h-24 bg-gray-700 rounded-full animate-pulse mx-auto"></div>
+                            </td>
+                            <td className="p-3 align-middle">
+                              <div className="h-6 w-32 bg-gray-700 rounded animate-pulse"></div>
+                            </td>
+                            <td className="p-3 align-middle">
+                              <div className="h-6 w-20 bg-gray-700 rounded animate-pulse"></div>
+                            </td>
+                            <td className="p-3 align-middle">
+                              <div className="h-6 w-full bg-gray-700 rounded-full animate-pulse"></div>
+                            </td>
+                          </tr>
+                        ))
+                      : rankings.map((waifu, index) => (
+                          <tr
+                            key={waifu.id}
+                            className="border-b border-gray-700 last:border-b-0 hover:bg-gray-700/50"
+                          >
+                            <td className="p-3 font-bold text-xl align-middle">
+                              {index + 1}
+                            </td>
+                            <td className="p-1 align-middle">
+                              {/* --- MODIFICATION: Image container size increased --- */}
                               <div
-                                className="bg-blue-500 h-6 rounded-full text-center transition-all duration-500"
-                                style={{ width: `${waifu.rank1Ratio}%` }}
-                              ></div>
-                              {/* Text overlay */}
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-white text-s font-bold">
-                                  {waifu.rank1Ratio.toFixed(2)}%
-                                </span>
+                                className="w-24 h-24 rounded-full overflow-hidden group cursor-pointer"
+                                onClick={() => openImageModal(waifu.image)}
+                              >
+                                <div className="transition-transform duration-300 group-hover:scale-125">
+                                  <LazyLoadImage
+                                    alt={waifu.name} // Alt text for accessibility
+                                    src={waifu.image} // The actual image URL
+                                    effect="blur" // This adds the nice blur-up effect
+                                    className="w-full h-full object-cover object-top"
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                </tbody>
-              </table>
-            </div>
-          </main>
-          <footer className="w-full text-center py-6">
-            {totalStudents > 0 && lastUpdated && (
-              <p className="text-sm text-gray-500">
-                Featuring a roster of {totalStudents} students. | Roster
-                Updated: {lastUpdated}
-              </p>
-            )}
-          </footer>
+                            </td>
+                            <td className="p-3 text-lg align-middle">
+                              {waifu.name}
+                            </td>
+                            <td className="p-3 text-lg align-middle text-amber-300">
+                              {waifu.totalPoints}
+                            </td>
+                            {/* --- MODIFICATION: Replaced text with a progress bar --- */}
+                            <td className="p-3 align-middle">
+                              <div className="relative w-full bg-gray-700 rounded-full h-6 shadow-inner">
+                                {/* Inner progress bar */}
+                                <div
+                                  className="bg-blue-500 h-6 rounded-full text-center transition-all duration-500"
+                                  style={{ width: `${waifu.rank1Ratio}%` }}
+                                ></div>
+                                {/* Text overlay */}
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <span className="text-white text-s font-bold">
+                                    {waifu.rank1Ratio.toFixed(2)}%
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                  </tbody>
+                </table>
+              </div>
+            </main>
+            <footer className="w-full text-center py-6">
+              {totalStudents > 0 && lastUpdated && (
+                <p className="text-sm text-gray-500">
+                  Featuring a roster of {totalStudents} students. | Roster
+                  Updated: {lastUpdated}
+                </p>
+              )}
+            </footer>
+          </div>
         </div>
       ) : tournamentWinner ? (
         <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white px-4 py-16">
