@@ -112,7 +112,7 @@
   {
     "id": 23,
     "name": "Hatsune Miku (Collab)",
-    "image": "/images/Hatsune Miku (Collab).png"
+    "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774567/Hatsune_Miku_Collab_lmwbnh.png"
   },
   {
     "id": 24,
@@ -317,7 +317,7 @@
   {
     "id": 64,
     "name": "Misaka Mikoto (Collab)",
-    "image": "/images/Misaka Mikoto (Collab).png"
+    "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774656/Misaka_Mikoto_Collab_hbgxdg.png"
   },
   {
     "id": 65,
@@ -442,7 +442,7 @@
   {
     "id": 89,
     "name": "Saten Ruiko (Collab)",
-    "image": "/images/Saten Ruiko (Collab).png"
+    "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774665/Saten_Ruiko_Collab_atcif3.png"
   },
   {
     "id": 90,
@@ -492,7 +492,7 @@
   {
     "id": 99,
     "name": "Shoukuhou Misaki (Collab)",
-    "image": "/images/Shoukuhou Misaki (Collab).png"
+    "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774668/Shoukuhou_Misaki_Collab_jniysf.png"
   },
   {
     "id": 100,
