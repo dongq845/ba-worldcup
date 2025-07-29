@@ -34,6 +34,9 @@ A full-stack web application that lets you vote for your favorite Blue Archive c
 - **Frontend:** React, Vite, Tailwind CSS, Flowbite-React
 - **Backend:** Node.js, Express.js
 - **Database:** PostgreSQL
+- **Infrastructure & Deployment:**
+  - **Render:** Provides continuous deployment and hosting. The backend runs as a **Web Service**, and the frontend is served as a **Static Site** with a global CDN.
+  - **Cloudflare:** Manages the custom domain, DNS records, and provides security services.
 
 ## Project Structure
 
