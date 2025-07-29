@@ -1,0 +1,10 @@
+services:
+  # This is your static frontend service
+  - type: web
+    name: ba-worldcup
+    env: static
+    # Add the following 'headers' section
+    headers:
+      - path: "/*"
+        name: "Strict-Transport-Security"
+        value: "max-age=31536000; includeSubDomains"
