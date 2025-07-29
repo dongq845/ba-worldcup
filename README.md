@@ -26,7 +26,7 @@ A full-stack web application that lets you vote for your favorite Blue Archive c
   - A custom, auto-dismissing pop-up notification confirms a successful result submission.
   - Clicking a character's thumbnail in the rankings opens a full-size image modal with a dimmed background.
   - Confirmation dialogs for the "Home" button and page reloads prevent accidental loss of tournament progress.
-  - A professional skeleton loader is shown while the ranking data is being fetched.
+  - A skeleton loader is shown while the ranking data is being fetched.
   - An automatic "Character Roster Updated" date in the footer that reads the file's metadata, requiring zero manual updates.
 
 ## Tech Stack
