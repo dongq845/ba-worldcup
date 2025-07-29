@@ -807,7 +807,7 @@ const App = () => {
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div
-                    className="text-8xl font-extrabold text-white"
+                    className="text-6xl md:text-8xl font-extrabold text-white"
                     style={{
                       textShadow:
                         "0 0 10px black, 0 0 20px black, 0 0 30px black",
