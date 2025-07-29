@@ -1,4 +1,5 @@
 // ba-worldcup/client/src/App.jsx
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { Tooltip } from "flowbite-react";
@@ -16,7 +17,7 @@ const POINTS = {
 
 // --- Testing Variables ---
 // TEST_ON: Master switch for test mode. (1 = On, 0 = Off)
-const TEST_ON = 0;
+const TEST_ON = 1;
 // TEST_ROUND: Set to 8 for Quarter-Finals, 4 for Semi-Finals, etc.
 // This is only active if TEST_ON is 1.
 const TEST_ROUND = 8;
@@ -40,13 +41,13 @@ const App = () => {
     winnerId: null,
     loserId: null,
   });
-
   const [runnerUp, setRunnerUp] = useState(null);
   const [semiFinalists, setSemiFinalists] = useState([]);
   const [quarterFinalists, setQuarterFinalists] = useState([]);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const [totalStudents, setTotalStudents] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     if (gameStarted && tournamentPhase === "setup") {
@@ -366,6 +367,20 @@ const App = () => {
       (qf) => !semiFinalistIds.includes(qf.id)
     );
   }
+
+  const handleStartGame = () => {
+    // 1. Trigger the fade-out animation
+    setIsTransitioning(true);
+
+    // 2. Wait for the animation to complete (500ms in this case)
+    setTimeout(() => {
+      // 3. After the fade, switch the view to the game
+      setGameStarted(true);
+      // Optional: Reset the transition state for future use, though not strictly necessary here
+      setIsTransitioning(false);
+    }, 500); // This duration should match your CSS transition duration
+  };
+
   return (
     <>
       {modalImage && (
@@ -393,7 +408,9 @@ const App = () => {
 
       {!gameStarted ? (
         <div
-          className="flex flex-col min-h-screen bg-gray-900 text-white"
+          className={`flex flex-col min-h-screen bg-gray-900 text-white transition-opacity duration-500 ${
+            isTransitioning ? "opacity-0" : "opacity-100"
+          }`}
           style={{
             backgroundImage: `url('https://res.cloudinary.com/doi21aa5i/image/upload/v1753803197/blue_archive_bg1_gwu4aw.png')`,
             backgroundSize: "cover",
@@ -416,7 +433,7 @@ const App = () => {
                   Playable Students Edition
                 </p>
                 <button
-                  onClick={() => setGameStarted(true)}
+                  onClick={handleStartGame}
                   className="w-40 h-40 bg-blue-600 text-white rounded-full text-5xl font-bold hover:bg-blue-700 transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-2xl transform hover:scale-110"
                 >
                   <span className="mb-2">Start!</span>
@@ -576,6 +593,10 @@ const App = () => {
                 <p className="text-sm text-gray-500">
                   Featuring a roster of {totalStudents} students. | Roster
                   Updated: {lastUpdated}
+                  <span className="mx-2">|</span>
+                  <Link to="/about" className="text-blue-400 hover:underline">
+                    About / How It Works
+                  </Link>
                 </p>
               )}
             </footer>
