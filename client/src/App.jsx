@@ -17,7 +17,7 @@ const POINTS = {
 
 // --- Testing Variables ---
 // TEST_ON: Master switch for test mode. (1 = On, 0 = Off)
-const TEST_ON = 1;
+const TEST_ON = 0;
 // TEST_ROUND: Set to 8 for Quarter-Finals, 4 for Semi-Finals, etc.
 // This is only active if TEST_ON is 1.
 const TEST_ROUND = 8;
