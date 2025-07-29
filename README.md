@@ -70,6 +70,7 @@ A full-stack web application that lets you vote for your favorite Blue Archive c
 │   │
 │   └── src/                # The source code for the React application.
 │       ├── App.jsx         # The main application component that routes pages.
+│       ├── AboutPage.jsx   # The component for the static '/about' page.
 │       ├── main.jsx        # The entry point of the React application.
 │       ├── NotFoundPage.jsx # The component for the 404 Not Found page.
 │       └── style.css       # Global CSS styles for the application.
