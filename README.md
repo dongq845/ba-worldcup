@@ -37,24 +37,72 @@ A full-stack web application that lets you vote for your favorite Blue Archive c
 
 ## Project Structure
 
-```bash
+```
 /ba-worldcup/
 │
-├── client/           # React frontend application
-│   ├── public/
-│   ├── src/
-│   │   ├── App.jsx     # Main application component
-│   │   └── ...
-│   ├── index.html
-│   └── package.json
+├── .gitignore              # Specifies intentionally untracked files to ignore.
+├── package-lock.json       # Records the exact version of each installed dependency.
+├── README.md               # This file. Contains project overview, setup, and documentation.
+├── render.yaml             # Configuration file for deploying the application on Render.
 │
-├── server/           # Node.js/Express backend API
-│   ├── server.js     # Express server and API logic
-│   ├── waifus.json   # Source of truth for all character data
-│   └── package.json
+├── client/                 # Contains the entire frontend React application.
+│   │
+│   ├── .env.development    # Environment variables for the frontend in development mode.
+│   ├── .env.production     # Environment variables for the frontend in production mode.
+│   ├── eslint.config.js    # Configuration for ESLint, a code linter for JavaScript.
+│   ├── index.html          # The main HTML file that serves as the entry point for the React app.
+│   ├── package-lock.json   # Records the exact version of each frontend dependency.
+│   ├── package.json        # Lists the frontend dependencies and scripts.
+│   ├── vite.config.js      # Configuration file for Vite, the frontend build tool.
+│   │
+│   ├── .flowbite-react/    # Configuration files for the Flowbite-React component library.
+│   │   ├── .gitignore      # .gitignore file for the Flowbite-React configuration.
+│   │   ├── class-list.json # List of classes used by Flowbite-React.
+│   │   └── config.json     # Main configuration for Flowbite-React.
+│   │
+│   ├── public/             # Contains static assets that are publicly accessible.
+│   │   ├── favicon.ico     # The icon for the website tab.
+│   │   ├── robots.txt      # Instructions for web crawlers.
+│   │   └── sitemap.xml     # A map of the website's pages for search engines.
+│   │
+│   └── src/                # The source code for the React application.
+│       ├── App.jsx         # The main application component that routes pages.
+│       ├── main.jsx        # The entry point of the React application.
+│       ├── NotFoundPage.jsx # The component for the 404 Not Found page.
+│       └── style.css       # Global CSS styles for the application.
 │
-└── README.md
+└── server/                 # Contains the entire backend Node.js/Express application.
+    │
+    ├── .env                # Environment variables for the backend (e.g., database connection string).
+    ├── package-lock.json   # Records the exact version of each backend dependency.
+    ├── package.json        # Lists the backend dependencies and scripts.
+    ├── server.js           # The main entry point for the Express server and all API logic.
+    └── waifus.json         # The source of truth for all character data, used to populate the database.
 ```
+
+## Dependencies
+
+### Frontend (`client/package.json`)
+
+| Dependency                          | Description                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **@tailwindcss/vite**               | A utility-first CSS framework packed with classes to build any design, directly in your markup.   |
+| **canvas-confetti**                 | A lightweight library for creating a celebratory confetti effect on the screen.                   |
+| **flowbite**                        | A popular component library built on top of Tailwind CSS for creating modern UIs.                 |
+| **flowbite-react**                  | The official React components for the Flowbite library.                                           |
+| **react**                           | A JavaScript library for building user interfaces.                                                |
+| **react-dom**                       | Serves as the entry point to the DOM and server renderers for React.                              |
+| **react-lazy-load-image-component** | A React component to lazy load images and other components/elements.                              |
+| **react-router-dom**                | The standard library for routing in React, enabling navigation among views of various components. |
+
+### Backend (`server/package.json`)
+
+| Dependency  | Description                                                                                                                      |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **cors**    | A Node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.               |
+| **dotenv**  | A zero-dependency module that loads environment variables from a `.env` file into `process.env`.                                 |
+| **express** | A minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. |
+| **pg**      | A non-blocking PostgreSQL client for Node.js.                                                                                    |
 
 ## How to Run Locally
 
