@@ -73,6 +73,7 @@ A full-stack web application that lets you vote for your favorite Blue Archive c
 │       ├── AboutPage.jsx   # The component for the static '/about' page.
 │       ├── main.jsx        # The entry point of the React application.
 │       ├── NotFoundPage.jsx # The component for the 404 Not Found page.
+│       ├── ScrollToTop.jsx # A component that scrolls the window to the top on route changes.
 │       └── style.css       # Global CSS styles for the application.
 │
 └── server/                 # Contains the entire backend Node.js/Express application.
@@ -188,3 +189,50 @@ npm run dev
 # This will automatically open the application in your browser,
 # typically at http://localhost:5173/
 ```
+
+## Development & Testing
+
+To ensure code quality, run the linter for the client-side code:
+
+```bash
+# From the /client directory
+npm run lint
+```
+
+Currently, the project does not have an automated test suite. Future development should include adding unit and integration tests using a framework like Jest or Vitest.
+
+## API Endpoints
+
+The backend server provides the following RESTful API endpoints.
+
+| Method | Endpoint          | Description                                         |
+|--------|-------------------|-----------------------------------------------------|
+| `GET`  | `/api/waifus`     | Retrieves the full list of all characters.          |
+| `GET`  | `/api/rankings`   | Retrieves the global character rankings and points. |
+| `POST` | `/api/submit`     | Submits the results of a completed tournament.      |
+
+## Data Schema
+
+### Character Object (`waifus.json`)
+
+Each character in the `waifus.json` array and the database follows this structure:
+
+```json
+{
+  "id": 1,
+  "name": "Aikiyo Fuuka",
+  "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774561/Aikiyo_Fuuka_rprrll.png"
+}
+```
+### Submission Payload (`POST /api/submit`)
+The client sends the following JSON payload when submitting results:
+```json
+{
+  "userId": "some-unique-user-id",
+  "winner": { "id": 1 },
+  "runnerUp": { "id": 2 },
+  "semiFinalists": [{ "id": 3 }, { "id": 4 }],
+  "quarterFinalists": [{ "id": 5 }, { "id": 6 }, { "id": 7 }, { "id": 8 }]
+}
+```
+
