@@ -650,7 +650,7 @@ const App = () => {
                 </div>
               )}
             </main>
-            <footer className="w-full text-center py-6">
+            <footer className="w-full text-center py-6 mb-5">
               {totalStudents > 0 && lastUpdated && (
                 <p className="text-sm text-gray-500">
                   Featuring a roster of {totalStudents} students. | Roster

@@ -159,7 +159,7 @@ const AboutPage = () => {
           </section>
         </main>
 
-        <footer className="text-center mt-16">
+        <footer className="text-center mt-16 mb-12">
           <Link
             to="/"
             className="px-8 py-3 bg-blue-600 text-white rounded-lg text-xl hover:bg-blue-700 transition-colors"
