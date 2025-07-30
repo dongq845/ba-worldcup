@@ -13,13 +13,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
-        {/* Route 1: The Homepage */}
         <Route path="/" element={<App />} />
-
-        {/* --- MODIFICATION: Add the new route for the About page --- */}
         <Route path="/about" element={<AboutPage />} />
-
-        {/* Route 3: The "Catch-All" or "Not Found" Route */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
