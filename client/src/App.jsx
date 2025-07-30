@@ -651,17 +651,17 @@ const App = () => {
                     disabled={currentPage === 1}
                     className="px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors"
                   >
-                    Previous
+                    {"<<"} Prev
                   </button>
                   <span className="text-gray-400">
-                    Page {currentPage} of {totalPages}
+                    Page {currentPage} / {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className="px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors"
                   >
-                    Next
+                    Next {">>"}
                   </button>
                 </div>
               )}
