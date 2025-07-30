@@ -48,8 +48,19 @@ const App = () => {
   const [modalImage, setModalImage] = useState(null);
   const [totalStudents, setTotalStudents] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [rowsToShow, setRowsToShow] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(rankings.length / rowsToShow);
+  const startIndex = (currentPage - 1) * rowsToShow;
+  const endIndex = startIndex + rowsToShow;
+  const currentRankings = rankings.slice(startIndex, endIndex);
 
   useEffect(() => {
+    const savedRows = localStorage.getItem("ba-worldcup-rows");
+    if (savedRows) {
+      setRowsToShow(Number(savedRows));
+    }
     if (gameStarted && tournamentPhase === "setup") {
       fetch(`${API_BASE_URL}/api/waifus`)
         .then((response) => response.json())
@@ -188,6 +199,13 @@ const App = () => {
     setByeContestants(byes);
     setContestants(prelims);
     setTournamentPhase("preliminary");
+  };
+
+  const handleRowsChange = (event) => {
+    const newRowCount = Number(event.target.value);
+    setRowsToShow(newRowCount);
+    localStorage.setItem("ba-worldcup-rows", newRowCount);
+    setCurrentPage(1);
   };
 
   const handleSubmitResult = () => {
@@ -439,7 +457,30 @@ const App = () => {
                   <span className="mb-2">Start!</span>
                 </button>
               </div>
-              <h2 className="text-3xl font-bold mb-4 mt-4">Global Rankings</h2>
+              <div className="w-full max-w-4xl flex justify-between items-center mt-4 mb-4">
+                <h2 className="text-3xl font-bold mb-4 mt-4">
+                  Global Rankings
+                </h2>
+                <div className="flex items-center space-x-2">
+                  <label
+                    htmlFor="rows-select"
+                    className="text-sm text-gray-400"
+                  >
+                    Show:
+                  </label>
+                  <select
+                    id="rows-select"
+                    value={rowsToShow}
+                    onChange={handleRowsChange}
+                    className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
+                  >
+                    <option value="10">10 rows</option>
+                    <option value="25">25 rows</option>
+                    <option value="50">50 rows</option>
+                    <option value="100">100 rows</option>
+                  </select>
+                </div>
+              </div>
               <div className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg overflow-auto">
                 <table className="w-full text-left table-fixed">
                   <thead className="bg-gray-700">
@@ -536,13 +577,13 @@ const App = () => {
                             </td>
                           </tr>
                         ))
-                      : rankings.map((waifu, index) => (
+                      : currentRankings.map((waifu, index) => (
                           <tr
                             key={waifu.id}
                             className="border-b border-gray-700 last:border-b-0 hover:bg-gray-700/50"
                           >
                             <td className="p-3 font-bold text-xl align-middle">
-                              {index + 1}
+                              {startIndex + index + 1}
                             </td>
                             <td className="p-1 align-middle">
                               {/* --- MODIFICATION: Image container size increased --- */}
@@ -587,6 +628,27 @@ const App = () => {
                   </tbody>
                 </table>
               </div>
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-4 mt-6">
+                  <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-gray-400">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </main>
             <footer className="w-full text-center py-6">
               {totalStudents > 0 && lastUpdated && (
