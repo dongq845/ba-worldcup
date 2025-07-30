@@ -17,13 +17,12 @@ const POINTS = {
 
 // --- Testing Variables ---
 // TEST_ON: Master switch for test mode. (1 = On, 0 = Off)
-const TEST_ON = 0;
+const TEST_ON = 1;
 // TEST_ROUND: Set to 8 for Quarter-Finals, 4 for Semi-Finals, etc.
 // This is only active if TEST_ON is 1.
 const TEST_ROUND = 8;
 
 const App = () => {
-  const [waifus, setWaifus] = useState([]);
   const [contestants, setContestants] = useState([]);
   const [winners, setWinners] = useState([]);
   const [round, setRound] = useState(1);
@@ -69,7 +68,6 @@ const App = () => {
         .then((response) => response.json())
         .then((data) => {
           const shuffledWaifus = shuffleArray(data);
-          setWaifus(shuffledWaifus);
           setupTournament(shuffledWaifus);
         })
         .catch((error) => console.error("Failed to load waifus:", error));
@@ -353,7 +351,6 @@ const App = () => {
   };
 
   const resetGame = () => {
-    setWaifus([]);
     setContestants([]);
     setWinners([]);
     setRound(1);
