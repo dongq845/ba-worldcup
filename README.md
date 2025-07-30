@@ -59,16 +59,16 @@ A full-stack web application that lets you vote for your favorite Blue Archive c
 │   ├── vite.config.js      # Configuration file for Vite, the frontend build tool.
 │   │
 │   ├── .flowbite-react/    # Configuration files for the Flowbite-React component library.
-│   │   ├── .gitignore      # .gitignore file for the Flowbite-React configuration.
-│   │   ├── class-list.json # List of classes used by Flowbite-React.
-│   │   └── config.json     # Main configuration for Flowbite-React.
 │   │
 │   ├── public/             # Contains static assets that are publicly accessible.
-│   │   ├── favicon.ico     # The icon for the website tab.
-│   │   ├── robots.txt      # Instructions for web crawlers.
-│   │   └── sitemap.xml     # A map of the website's pages for search engines.
 │   │
 │   └── src/                # The source code for the React application.
+│       ├── components/     # Contains reusable React components.
+│       │   ├── Tournament.jsx # Manages the tournament logic and view.
+│       │   ├── Rankings.jsx   # Displays the global rankings.
+│       │   └── Results.jsx    # Shows the tournament results.
+│       ├── services/       # Contains modules for API calls.
+│       │   └── api.js         # Handles all fetch requests to the backend.
 │       ├── App.jsx         # The main application component that routes pages.
 │       ├── AboutPage.jsx   # The component for the static '/about' page.
 │       ├── main.jsx        # The entry point of the React application.
@@ -81,8 +81,17 @@ A full-stack web application that lets you vote for your favorite Blue Archive c
     ├── .env                # Environment variables for the backend (e.g., database connection string).
     ├── package-lock.json   # Records the exact version of each backend dependency.
     ├── package.json        # Lists the backend dependencies and scripts.
-    ├── server.js           # The main entry point for the Express server and all API logic.
-    └── waifus.json         # The source of truth for all character data, used to populate the database.
+    ├── server.js           # The main entry point for the Express server.
+    ├── waifus.json         # The source of truth for all character data, used to populate the database.
+    │
+    ├── db/                 # Contains database-related modules.
+    │   └── index.js        # Handles database connection and initialization.
+    ├── controllers/        # Contains the business logic for API routes.
+    │   ├── waifusController.js # Logic for waifu and ranking routes.
+    │   └── submissionsController.js # Logic for submission routes.
+    └── routes/             # Defines the API routes.
+        ├── waifus.js     # Routes for waifus and rankings.
+        └── submissions.js # Routes for submissions.
 ```
 
 ## Dependencies
