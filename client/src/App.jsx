@@ -1,6 +1,6 @@
 // ba-worldcup/client/src/App.jsx
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 import { Tooltip } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -50,6 +50,9 @@ const App = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [rowsToShow, setRowsToShow] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const footerRef = useRef(null);
+  const isInitialMount = useRef(true);
 
   const totalPages = Math.ceil(rankings.length / rowsToShow);
   const startIndex = (currentPage - 1) * rowsToShow;
@@ -170,6 +173,22 @@ const App = () => {
       }
     }
   }, [currentMatch, contestants, gameStarted, tournamentWinner]); // This effect runs whenever the match changes
+
+  useEffect(() => {
+    // This effect runs whenever 'currentPage' changes.
+
+    // We check if it's the initial page load. If so, we don't scroll.
+    if (isInitialMount.current) {
+      isInitialMount.current = false; // Set it to false for all future renders
+    } else {
+      // For all subsequent page changes, scroll to the footer.
+      footerRef.current?.scrollIntoView({ behavior: "auto" });
+    }
+  }, [currentPage]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const isPowerOfTwo = (n) => n > 0 && (n & (n - 1)) === 0;
 
@@ -650,7 +669,7 @@ const App = () => {
                 </div>
               )}
             </main>
-            <footer className="w-full text-center py-6 mb-5">
+            <footer ref={footerRef} className="w-full text-center py-6 mb-5">
               {totalStudents > 0 && lastUpdated && (
                 <p className="text-sm text-gray-500">
                   Featuring a roster of {totalStudents} students. | Roster
