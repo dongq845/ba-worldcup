@@ -112,11 +112,11 @@ const App = () => {
                 style={{ minHeight: "50vh" }}
               >
                 <h1 className="text-5xl font-bold mb-8">
-                  Blue Archive Waifu World Cup{" "}
+                  Blue Archive Character World Cup{" "}
                   <span className="text-gray-500">(BETA)</span>
                 </h1>
                 <p className="text-2xl text-blue-300 mb-8">
-                  Playable Students Edition
+                  Vote For Your Favorite Students
                 </p>
                 <button
                   onClick={handleStartGame}

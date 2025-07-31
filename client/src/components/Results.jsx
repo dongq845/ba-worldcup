@@ -98,13 +98,13 @@ const Results = ({
       </div>
       <div className="mt-12 w-full max-w-5xl bg-gray-800/50 p-6 rounded-xl">
         <h2 className="text-3xl font-bold text-center mb-6 border-b border-gray-600 pb-4">
-          Full Results
+          Full Tournament Results & Points
         </h2>
         <div className="space-y-8">
           {runnerUp && (
             <div>
               <h3 className="text-2xl font-semibold text-gray-400 mb-4">
-                Runner-Up (2nd)
+                Runner-Up (2nd) - Points Awarded
               </h3>
               <div className="flex justify-center">
                 <div className="flex flex-col items-center text-center">
@@ -125,7 +125,7 @@ const Results = ({
           {semiFinalists.length > 0 && (
             <div>
               <h3 className="text-2xl font-semibold text-gray-400 mb-4">
-                Semi-Finalists (3rd & 4th)
+                Semi-Finalists (3rd & 4th) - Points Awarded
               </h3>
               <div className="flex justify-center gap-8">
                 {semiFinalists.map((char) => (
@@ -151,7 +151,7 @@ const Results = ({
           {quarterFinalists.length > 0 && (
             <div>
               <h3 className="text-2xl font-semibold text-gray-400 mb-4">
-                Quarter-Finalists (5th - 8th)
+                Quarter-Finalists (5th - 8th) - Points Awarded
               </h3>
               <div className="flex justify-center gap-x-6 gap-y-4 flex-wrap">
                 {quarterFinalists.map((char) => (

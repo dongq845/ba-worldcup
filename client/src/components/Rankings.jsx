@@ -57,7 +57,9 @@ const Rankings = ({ onImageClick }) => {
   return (
     <>
       <div className="w-full max-w-4xl flex justify-between items-center mt-4 mb-4">
-        <h2 className="text-3xl font-bold mb-4 mt-4">Global Rankings</h2>
+        <h2 className="text-3xl font-bold mb-4 mt-4">
+          Global Student Rank & Points
+        </h2>
         <div className="flex items-center space-x-2">
           <label htmlFor="rows-select" className="text-sm text-gray-400">
             Show:
@@ -238,11 +240,11 @@ const Rankings = ({ onImageClick }) => {
       <footer ref={footerRef} className="w-full text-center py-6 mb-5">
         {totalStudents > 0 && lastUpdated && (
           <p className="text-sm text-gray-500">
-            Featuring a roster of {totalStudents} students. | Roster Updated:{" "}
-            {lastUpdated}
+            Featuring a character roster of {totalStudents} students. | Roster
+            Updated: {lastUpdated}
             <span className="mx-2">|</span>
             <a href="/about" className="text-blue-400 hover:underline">
-              About / How It Works
+              About / How Points Work
             </a>
           </p>
         )}
