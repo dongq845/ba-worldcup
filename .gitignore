@@ -23,6 +23,18 @@ dist-ssr
 *.sln
 *.sw?
 
-# Personal files
+# /ba-worldcup/.gitignore
+
+# Dependencies
+/node_modules
+/client/node_modules
+/server/node_modules
+
+# Environment files
 .env
-.env.production
+/client/.env.development
+/client/.env.production
+/server/.env
+
+# Production
+/build
