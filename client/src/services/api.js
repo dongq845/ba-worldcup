@@ -1,8 +1,8 @@
 // ba-worldcup/client/src/services/api.js
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const getWaifus = () => {
-  return fetch(`${API_BASE_URL}/api/waifus`).then((response) =>
+export const getStudents = () => {
+  return fetch(`${API_BASE_URL}/api/students`).then((response) =>
     response.json()
   );
 };

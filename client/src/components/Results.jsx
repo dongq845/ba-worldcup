@@ -26,7 +26,7 @@ const Results = ({
     );
 
     const payload = {
-      userId: localStorage.getItem("waifuCupUserId"),
+      userId: localStorage.getItem("studentCupUserId"),
       winner: winner,
       runnerUp: runnerUp,
       semiFinalists: semiFinalLosers,

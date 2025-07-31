@@ -1,6 +1,6 @@
-# Blue Archive Waifu World Cup (BETA)
+# Blue Archive Student World Cup (BETA)
 
-A full-stack web application that lets you vote for your favorite Blue Archive character in a dynamic, tournament-style bracket and contributes to a global ranking.
+A full-stack web application that lets you vote for your favorite Blue Archive student in a dynamic, tournament-style bracket and contributes to a global ranking.
 
 ### Try it live at [baworldcup.com!](https://baworldcup.com)
 
@@ -82,15 +82,15 @@ A full-stack web application that lets you vote for your favorite Blue Archive c
     ├── package-lock.json   # Records the exact version of each backend dependency.
     ├── package.json        # Lists the backend dependencies and scripts.
     ├── server.js           # The main entry point for the Express server.
-    ├── waifus.json         # The source of truth for all character data, used to populate the database.
+    ├── students.json         # The source of truth for all character data, used to populate the database.
     │
     ├── db/                 # Contains database-related modules.
     │   └── index.js        # Handles database connection and initialization.
     ├── controllers/        # Contains the business logic for API routes.
-    │   ├── waifusController.js # Logic for waifu and ranking routes.
+    │   ├── studentsController.js # Logic for student and ranking routes.
     │   └── submissionsController.js # Logic for submission routes.
     └── routes/             # Defines the API routes.
-        ├── waifus.js     # Routes for waifus and rankings.
+        ├── students.js     # Routes for students and rankings.
         └── submissions.js # Routes for submissions.
 ```
 
@@ -216,15 +216,15 @@ The backend server provides the following RESTful API endpoints.
 
 | Method | Endpoint          | Description                                         |
 |--------|-------------------|-----------------------------------------------------|
-| `GET`  | `/api/waifus`     | Retrieves the full list of all characters.          |
+| `GET`  | `/api/students`     | Retrieves the full list of all characters.          |
 | `GET`  | `/api/rankings`   | Retrieves the global character rankings and points. |
 | `POST` | `/api/submit`     | Submits the results of a completed tournament.      |
 
 ## Data Schema
 
-### Character Object (`waifus.json`)
+### Character Object (`students.json`)
 
-Each character in the `waifus.json` array and the database follows this structure:
+Each character in the `students.json` array and the database follows this structure:
 
 ```json
 {
@@ -244,4 +244,3 @@ The client sends the following JSON payload when submitting results:
   "quarterFinalists": [{ "id": 5 }, { "id": 6 }, { "id": 7 }, { "id": 8 }]
 }
 ```
-

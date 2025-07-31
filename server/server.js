@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { initializeDatabase } = require("./db");
-const waifusRoutes = require("./routes/waifus");
+const studentsRoutes = require("./routes/students");
 const submissionsRoutes = require("./routes/submissions");
 
 const app = express();
@@ -32,7 +32,7 @@ const PORT = process.env.PORT || 3001;
 
 initializeDatabase();
 
-app.use("/api", waifusRoutes);
+app.use("/api", studentsRoutes);
 app.use("/api", submissionsRoutes);
 
 app.listen(PORT, () => {

@@ -7,7 +7,7 @@ const AboutPage = () => {
       <div className="w-full max-w-4xl mx-auto p-4 sm:p-8">
         <header className="text-center mb-12">
           <h1 className="text-5xl font-extrabold text-blue-300">
-            About the Waifu World Cup
+            About the Student World Cup
           </h1>
           <p className="text-xl text-gray-400 mt-2">
             How your votes shape the global leaderboard.

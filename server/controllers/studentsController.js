@@ -1,9 +1,9 @@
-// ba-worldcup/server/controllers/waifusController.js
+// ba-worldcup/server/controllers/studentsController.js
 const { pool } = require("../db");
 const fs = require("fs").promises;
 const path = require("path");
 
-const WAIFUS_JSON = path.join(__dirname, "..", "waifus.json");
+const STUDENTS_JSON = path.join(__dirname, "..", "students.json");
 
 const POINTS = {
   WINNER: 5,
@@ -12,9 +12,9 @@ const POINTS = {
   QUARTER_FINALIST: 1,
 };
 
-exports.getWaifus = async (req, res) => {
+exports.getStudents = async (req, res) => {
   try {
-    const characters = await pool.query("SELECT id, name, image FROM waifus");
+    const characters = await pool.query("SELECT id, name, image FROM students");
     res.json(characters.rows);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch characters." });
@@ -23,14 +23,14 @@ exports.getWaifus = async (req, res) => {
 
 exports.getRankings = async (req, res) => {
   try {
-    const allWaifusRes = await pool.query("SELECT * FROM waifus");
+    const allStudentsRes = await pool.query("SELECT * FROM students");
     const allSubmissionsRes = await pool.query("SELECT * FROM submissions");
 
-    const allWaifus = allWaifusRes.rows;
+    const allStudents = allStudentsRes.rows;
     const allSubmissions = allSubmissionsRes.rows;
 
-    const points = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
-    const wins = Object.fromEntries(allWaifus.map((w) => [w.id, 0]));
+    const points = Object.fromEntries(allStudents.map((s) => [s.id, 0]));
+    const wins = Object.fromEntries(allStudents.map((s) => [s.id, 0]));
 
     for (const sub of allSubmissions) {
       if (sub.winnerid) {
@@ -53,17 +53,17 @@ exports.getRankings = async (req, res) => {
     }
 
     const totalSubmissions = allSubmissions.length;
-    const rankings = allWaifus.map((waifu) => ({
-      ...waifu,
-      totalPoints: points[waifu.id],
-      winCount: wins[waifu.id],
+    const rankings = allStudents.map((student) => ({
+      ...student,
+      totalPoints: points[student.id],
+      winCount: wins[student.id],
       rank1Ratio:
-        totalSubmissions > 0 ? (wins[waifu.id] / totalSubmissions) * 100 : 0,
+        totalSubmissions > 0 ? (wins[student.id] / totalSubmissions) * 100 : 0,
     }));
 
     rankings.sort((a, b) => b.totalPoints - a.totalPoints);
 
-    const stats = await fs.stat(WAIFUS_JSON);
+    const stats = await fs.stat(STUDENTS_JSON);
     const lastUpdated = new Date(stats.mtime).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -73,7 +73,7 @@ exports.getRankings = async (req, res) => {
     res.json({
       rankings: rankings,
       lastUpdated: lastUpdated,
-      totalStudents: allWaifus.length,
+      totalStudents: allStudents.length,
     });
   } catch (err) {
     console.error("Failed to generate rankings:", err);

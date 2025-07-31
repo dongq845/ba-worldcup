@@ -1,7 +1,7 @@
 // ba-worldcup/client/src/components/Tournament.jsx
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
-import { getWaifus } from "../services/api";
+import { getStudents } from "../services/api";
 import Results from "./Results";
 
 const POINTS = {
@@ -32,12 +32,12 @@ const Tournament = ({ onGoHome, onSubmission }) => {
 
   useEffect(() => {
     if (tournamentPhase === "setup") {
-      getWaifus()
+      getStudents()
         .then((data) => {
           const shuffledWaifus = shuffleArray(data);
           setupTournament(shuffledWaifus);
         })
-        .catch((error) => console.error("Failed to load waifus:", error));
+        .catch((error) => console.error("Failed to load students:", error));
     }
   }, [tournamentPhase]);
 
@@ -151,9 +151,9 @@ const Tournament = ({ onGoHome, onSubmission }) => {
 
   const handleSelect = (winner) => {
     if (selectionFeedback.winnerId) return;
-    const waifu1 = contestants[currentMatch * 2];
-    const waifu2 = contestants[currentMatch * 2 + 1];
-    const loser = winner.id === waifu1.id ? waifu2 : waifu1;
+    const student1 = contestants[currentMatch * 2];
+    const student2 = contestants[currentMatch * 2 + 1];
+    const loser = winner.id === student1.id ? student2 : student1;
     setSelectionFeedback({ winnerId: winner.id, loserId: loser.id });
     setTimeout(() => {
       const newWinners = [...winners, winner];

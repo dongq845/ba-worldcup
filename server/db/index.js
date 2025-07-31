@@ -10,7 +10,7 @@ const pool = new Pool({
   ssl: isProduction ? { rejectUnauthorized: false } : true,
 });
 
-const WAIFUS_JSON = path.join(__dirname, "..", "waifus.json");
+const STUDENTS_JSON = path.join(__dirname, "..", "students.json");
 
 const initializeDatabase = async () => {
   try {
@@ -18,7 +18,7 @@ const initializeDatabase = async () => {
     console.log("Successfully connected to PostgreSQL database.");
 
     await client.query(`
-      CREATE TABLE IF NOT EXISTS waifus (
+      CREATE TABLE IF NOT EXISTS students (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         image TEXT NOT NULL
@@ -36,17 +36,17 @@ const initializeDatabase = async () => {
     `);
 
     const countResult = await client.query(
-      "SELECT COUNT(id) as count FROM waifus"
+      "SELECT COUNT(id) as count FROM students"
     );
     if (countResult.rows[0].count === "0") {
-      console.log("Database is empty. Populating from waifus.json...");
-      const waifuFile = await fs.readFile(WAIFUS_JSON, "utf-8");
-      const waifuData = JSON.parse(waifuFile);
+      console.log("Database is empty. Populating from students.json...");
+      const studentFile = await fs.readFile(STUDENTS_JSON, "utf-8");
+      const studentData = JSON.parse(studentFile);
 
-      for (const waifu of waifuData) {
+      for (const student of studentData) {
         await client.query(
-          "INSERT INTO waifus (id, name, image) VALUES ($1, $2, $3)",
-          [waifu.id, waifu.name, waifu.image]
+          "INSERT INTO students (id, name, image) VALUES ($1, $2, $3)",
+          [student.id, student.name, student.image]
         );
       }
       console.log("Database populated successfully.");

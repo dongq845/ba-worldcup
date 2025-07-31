@@ -4,6 +4,7 @@ import { Tooltip } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { getRankings } from "../services/api";
+import { FaXTwitter } from "react-icons/fa6";
 
 const Rankings = ({ onImageClick }) => {
   const [rankings, setRankings] = useState([]);
@@ -171,9 +172,9 @@ const Rankings = ({ onImageClick }) => {
                     </td>
                   </tr>
                 ))
-              : currentRankings.map((waifu, index) => (
+              : currentRankings.map((student, index) => (
                   <tr
-                    key={waifu.id}
+                    key={student.id}
                     className="border-b border-gray-700 last:border-b-0 hover:bg-gray-700/50"
                   >
                     <td className="p-3 font-bold text-xl align-middle">
@@ -182,31 +183,31 @@ const Rankings = ({ onImageClick }) => {
                     <td className="p-1 align-middle">
                       <div
                         className="w-24 h-24 rounded-full overflow-hidden group cursor-pointer"
-                        onClick={() => onImageClick(waifu.image)}
+                        onClick={() => onImageClick(student.image)}
                       >
                         <div className="transition-transform duration-300 group-hover:scale-125">
                           <LazyLoadImage
-                            alt={waifu.name}
-                            src={waifu.image}
+                            alt={student.name}
+                            src={student.image}
                             effect="blur"
                             className="w-full h-full object-cover object-top"
                           />
                         </div>
                       </div>
                     </td>
-                    <td className="p-3 text-lg align-middle">{waifu.name}</td>
+                    <td className="p-3 text-lg align-middle">{student.name}</td>
                     <td className="p-3 text-lg align-middle text-amber-300">
-                      {waifu.totalPoints}
+                      {student.totalPoints}
                     </td>
                     <td className="p-3 align-middle">
                       <div className="relative w-full bg-gray-700 rounded-full h-6 shadow-inner">
                         <div
                           className="bg-blue-500 h-6 rounded-full text-center transition-all duration-500"
-                          style={{ width: `${waifu.rank1Ratio}%` }}
+                          style={{ width: `${student.rank1Ratio}%` }}
                         ></div>
                         <div className="absolute inset-0 flex items-center justify-center">
                           <span className="text-white text-s font-bold">
-                            {waifu.rank1Ratio.toFixed(2)}%
+                            {student.rank1Ratio.toFixed(2)}%
                           </span>
                         </div>
                       </div>
@@ -237,15 +238,30 @@ const Rankings = ({ onImageClick }) => {
           </button>
         </div>
       )}
-      <footer ref={footerRef} className="w-full text-center py-6 mb-5">
+      <footer
+        ref={footerRef}
+        className="w-full max-w-4xl text-center py-6 mb-5"
+      >
         {totalStudents > 0 && lastUpdated && (
           <p className="text-sm text-gray-500">
-            Featuring a character roster of {totalStudents} students. | Roster
-            Updated: {lastUpdated}
+            Featuring a roster of {totalStudents} students. | Roster Updated:{" "}
+            {lastUpdated}
             <span className="mx-2">|</span>
             <a href="/about" className="text-blue-400 hover:underline">
-              About / How Points Work
+              About / How It Works
             </a>
+            <span className="mx-2">|</span>
+            <div className="inline-block align-middle">
+              <a
+                href="https://x.com/obsell_"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow on X"
+                className="text-gray-400 hover:text-white transition-colors text-2xl"
+              >
+                <FaXTwitter />
+              </a>
+            </div>
           </p>
         )}
       </footer>

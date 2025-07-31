@@ -13,10 +13,10 @@ const App = () => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    let currentUserId = localStorage.getItem("waifuCupUserId");
+    let currentUserId = localStorage.getItem("studentCupUserId");
     if (!currentUserId) {
       currentUserId = generateUUID();
-      localStorage.setItem("waifuCupUserId", currentUserId);
+      localStorage.setItem("studentCupUserId", currentUserId);
     }
     setUserId(currentUserId);
 
@@ -112,7 +112,7 @@ const App = () => {
                 style={{ minHeight: "50vh" }}
               >
                 <h1 className="text-5xl font-bold mb-8">
-                  Blue Archive Character World Cup{" "}
+                  Blue Archive Student World Cup{" "}
                   <span className="text-gray-500">(BETA)</span>
                 </h1>
                 <p className="text-2xl text-blue-300 mb-8">
