@@ -4,7 +4,7 @@ A full-stack web application that lets you vote for your favorite Blue Archive s
 
 ### Try it live at [baworldcup.com!](https://baworldcup.com)
 
-![Screenshot of the application](https://github.com/user-attachments/assets/acb3f604-af66-464e-b8a3-3f86d98db8c8)
+![Screenshot of the application](https://github.com/user-attachments/assets/18cfde1c-e0c4-46a3-b668-308931a04a73)
 
 ## Core Features
 
@@ -14,18 +14,23 @@ The application is divided into three main user-facing pages, each with distinct
 
 This is the main landing page, displaying the global leaderboard of all students.
 
+![screenshot of rankings page](https://github.com/user-attachments/assets/84ee1cf9-56eb-48f7-b789-a20dadd4a9ec)
+
 **Page Functionality:**
+
 - Displays a ranked list of students based on points accumulated from all user tournament submissions.
 - Shows each student's name, portrait, and total points.
 - Includes a "Last Updated" timestamp indicating when the rankings were last changed.
 - Features a skeleton loader while data is being fetched to improve perceived performance.
 
 **API Interaction:**
+
 - **Endpoint:** `GET /api/rankings`
 - **Description:** On page load, the frontend makes a single GET request to this endpoint to retrieve the entire list of ranked students.
 - **Data Transfer (Response):** The server responds with a JSON array of student objects, sorted by points in descending order.
 
-  *Example Response (`200 OK`):*
+  _Example Response (`200 OK`):_
+
   ```json
   [
     {
@@ -47,18 +52,23 @@ This is the main landing page, displaying the global leaderboard of all students
 
 This is where the interactive voting takes place. Users are presented with a series of matchups in a single-elimination bracket.
 
+![Screenshot of tournament page](https://github.com/user-attachments/assets/bf00ae35-5d46-419c-af71-8211b39ed3d4)
+
 **Page Functionality:**
+
 - Dynamically generates a fair tournament bracket. If the number of students is not a power of two (e.g., 32, 64), it automatically creates a preliminary "play-in" round.
 - Users vote by clicking on a student's image or using the left/right arrow keys.
 - A progress bar visualizes the user's position within the current round.
 - Upon completion, the user is automatically redirected to the `/results` page.
 
 **API Interaction:**
+
 - **Endpoint:** `GET /api/students`
 - **Description:** Before the tournament begins, the frontend fetches the complete list of all participating students. This data is then used to construct the bracket on the client-side.
 - **Data Transfer (Response):** The server provides a JSON array of all student objects, typically unsorted.
 
-  *Example Response (`200 OK`):*
+  _Example Response (`200 OK`):_
+
   ```json
   [
     {
@@ -78,17 +88,22 @@ This is where the interactive voting takes place. Users are presented with a ser
 
 This page displays the outcome of the user's most recently completed tournament and handles the submission of the results to the backend.
 
+![Screenshot of results page](https://github.com/user-attachments/assets/adfb01bd-c4d1-4491-b45b-62925ef86322)
+
 **Page Functionality:**
+
 - Shows the tournament winner, runner-up, semi-finalists, and quarter-finalists.
 - Triggers a confetti animation to celebrate the winner.
 - Automatically sends the tournament results to the server to update the global rankings.
 
 **API Interaction:**
+
 - **Endpoint:** `POST /api/submit`
 - **Description:** After the final match, the frontend sends a POST request containing the results. The payload includes a unique `userId` (stored in the user's `localStorage`) to ensure that each user's submission overwrites their previous one, preventing point spamming.
 - **Data Transfer (Request Body):** The client sends a JSON object detailing the placements.
 
-  *Example Payload:*
+  _Example Payload:_
+
   ```json
   {
     "userId": "a-unique-identifier-for-the-user",
@@ -98,10 +113,12 @@ This page displays the outcome of the user's most recently completed tournament 
     "quarterFinalists": [{ "id": 5 }, { "id": 6 }, { "id": 7 }, { "id": 8 }]
   }
   ```
+
 - **Server Logic:** The backend processes this payload, calculates the points for each student (Winner: 5, Runner-up: 3, etc.), and updates the database. If the `userId` already exists in the submissions table, it first reverts the points from their previous submission before applying the new ones.
 - **Data Transfer (Response):** The server responds with a success or error message.
 
-  *Example Response (`200 OK`):*
+  _Example Response (`200 OK`):_
+
   ```json
   {
     "message": "Results submitted successfully"
@@ -293,11 +310,11 @@ Currently, the project does not have an automated test suite. Future development
 
 The backend server provides the following RESTful API endpoints.
 
-| Method | Endpoint          | Description                                         |
-|--------|-------------------|-----------------------------------------------------|
-| `GET`  | `/api/students`     | Retrieves the full list of all characters.          |
-| `GET`  | `/api/rankings`   | Retrieves the global character rankings and points. |
-| `POST` | `/api/submit`     | Submits the results of a completed tournament.      |
+| Method | Endpoint        | Description                                         |
+| ------ | --------------- | --------------------------------------------------- |
+| `GET`  | `/api/students` | Retrieves the full list of all characters.          |
+| `GET`  | `/api/rankings` | Retrieves the global character rankings and points. |
+| `POST` | `/api/submit`   | Submits the results of a completed tournament.      |
 
 ## Data Schema
 
@@ -312,8 +329,11 @@ Each character in the `students.json` array and the database follows this struct
   "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774561/Aikiyo_Fuuka_rprrll.png"
 }
 ```
+
 ### Submission Payload (`POST /api/submit`)
+
 The client sends the following JSON payload when submitting results:
+
 ```json
 {
   "userId": "some-unique-user-id",
