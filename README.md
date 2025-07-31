@@ -239,6 +239,22 @@ This page displays the outcome of the user's most recently completed tournament 
 | ---------- | ---------------------------------------------------------------------------------- |
 | **nodemon**  | A tool that helps develop Node.js based applications by automatically restarting the node application when file changes in the directory are detected. |
 
+## Contributing
+
+We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+
+## Bug Reports & Feature Requests
+
+If you encounter a bug or have a feature request, please open an issue on our [GitHub Issues](https://github.com/dongq/ba-worldcup/issues) page.
+
+## Code of Conduct
+
+We have adopted the Contributor Covenant as our Code of Conduct. Please read our [Code of Conduct](CODE_OF_CONDUCT.md) to understand our community standards.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
 ## How to Run Locally
 
 To run this project on your local machine, you will need to have Node.js installed.
