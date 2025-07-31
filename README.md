@@ -202,8 +202,27 @@ This page displays the outcome of the user's most recently completed tournament 
 | **flowbite-react**                  | The official React components for the Flowbite library.                                           |
 | **react**                           | A JavaScript library for building user interfaces.                                                |
 | **react-dom**                       | Serves as the entry point to the DOM and server renderers for React.                              |
+| **react-icons**                     | A library that provides a wide variety of popular icon packs as React components.                 |
 | **react-lazy-load-image-component** | A React component to lazy load images and other components/elements.                              |
 | **react-router-dom**                | The standard library for routing in React, enabling navigation among views of various components. |
+
+#### Dev Dependencies
+
+| Dependency                  | Description                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------------ |
+| **@eslint/js**              | The core rules for ESLint, a pluggable and configurable linter tool for JavaScript.  |
+| **@tailwindcss/postcss**    | A PostCSS plugin for Tailwind CSS.                                                   |
+| **@types/react**            | TypeScript type definitions for React.                                               |
+| **@types/react-dom**        | TypeScript type definitions for React DOM.                                           |
+| **@vitejs/plugin-react**    | The official Vite plugin for React.                                                  |
+| **autoprefixer**            | A PostCSS plugin to parse CSS and add vendor prefixes to CSS rules.                  |
+| **eslint**                  | A tool for identifying and reporting on patterns found in ECMAScript/JavaScript code. |
+| **eslint-plugin-react-hooks** | An ESLint plugin for enforcing the rules of React Hooks.                             |
+| **eslint-plugin-react-refresh** | An ESLint plugin for enforcing React Refresh conventions.                            |
+| **globals**                 | A package that provides global variables for ESLint.                                 |
+| **postcss**                 | A tool for transforming CSS with JavaScript.                                         |
+| **tailwindcss**             | A utility-first CSS framework for rapidly building custom user interfaces.           |
+| **vite**                    | A fast frontend build tool that provides a rich feature set for modern web projects. |
 
 ### Backend (`server/package.json`)
 
@@ -213,6 +232,12 @@ This page displays the outcome of the user's most recently completed tournament 
 | **dotenv**  | A zero-dependency module that loads environment variables from a `.env` file into `process.env`.                                 |
 | **express** | A minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. |
 | **pg**      | A non-blocking PostgreSQL client for Node.js.                                                                                    |
+
+#### Dev Dependencies
+
+| Dependency | Description                                                                        |
+| ---------- | ---------------------------------------------------------------------------------- |
+| **nodemon**  | A tool that helps develop Node.js based applications by automatically restarting the node application when file changes in the directory are detected. |
 
 ## How to Run Locally
 
@@ -276,10 +301,13 @@ This project requires **two terminals** running at the same time: one for the ba
 cd server
 
 # Start the Node.js server
-node server.js
+npm start
 
 # You should see: "Server is running on http://localhost:3001"
 # and "Successfully connected to PostgreSQL database."
+
+# Alternatively, for development with auto-restarting on file changes:
+# npm run dev
 ```
 
 **Terminal 2: Start the Frontend**
