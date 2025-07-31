@@ -67,7 +67,7 @@ const AboutPage = () => {
                   Example screenshot of a matchup:
                 </p>
                 <img
-                  src="https://res.cloudinary.com/doi21aa5i/image/upload/v1753809891/blue_archive_matchup_hhqeju.png"
+                  src="https://res.cloudinary.com/doi21aa5i/image/upload/v1753945947/blue_archive_matchup_gss4j3.webp"
                   alt="Screenshot of a tournament matchup"
                   className="mt-2 rounded-lg shadow-xl ring-1 ring-white/10"
                 />
@@ -86,7 +86,7 @@ const AboutPage = () => {
                   Example screenshot of the final results screen:
                 </p>
                 <img
-                  src="https://res.cloudinary.com/doi21aa5i/image/upload/v1753809891/blue_archive_result_cd4hlm.png"
+                  src="https://res.cloudinary.com/doi21aa5i/image/upload/v1753945946/blue_archive_result_haywbp.webp"
                   alt="Screenshot of the final results page"
                   className="mt-2 rounded-lg shadow-xl ring-1 ring-white/10"
                 />

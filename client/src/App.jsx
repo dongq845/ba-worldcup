@@ -98,7 +98,7 @@ const App = () => {
             isTransitioning ? "opacity-0" : "opacity-100"
           }`}
           style={{
-            backgroundImage: `url('https://res.cloudinary.com/doi21aa5i/image/upload/v1753803197/blue_archive_bg1_gwu4aw.png')`,
+            backgroundImage: `url('https://res.cloudinary.com/doi21aa5i/image/upload/v1753945947/blue_archive_bg1_bws6fa.webp')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
