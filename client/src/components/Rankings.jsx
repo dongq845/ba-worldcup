@@ -4,7 +4,8 @@ import { Tooltip } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { getRankings } from "../services/api";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaGithub, FaXTwitter } from "react-icons/fa6";
+import { SiKofi } from "react-icons/si";
 
 const Rankings = ({ onImageClick }) => {
   const [rankings, setRankings] = useState([]);
@@ -238,20 +239,30 @@ const Rankings = ({ onImageClick }) => {
           </button>
         </div>
       )}
-      <footer
-        ref={footerRef}
-        className="w-full max-w-4xl text-center py-6 mb-5"
-      >
+      <footer ref={footerRef} className="w-full max-w-4xl py-6 mb-5">
         {totalStudents > 0 && lastUpdated && (
-          <p className="text-sm text-gray-500">
-            Featuring a roster of {totalStudents} students. | Roster Updated:{" "}
-            {lastUpdated}
-            <span className="mx-2">|</span>
-            <a href="/about" className="text-blue-400 hover:underline">
-              About / How It Works
-            </a>
-            <span className="mx-2">|</span>
-            <div className="inline-block align-middle">
+          <div className="flex justify-between items-center w-full">
+            {/* Group 1: Informational Text (aligned to the left) */}
+            <p className="text-sm text-gray-500">
+              Featuring a roster of {totalStudents} students. | Roster Updated:{" "}
+              {lastUpdated}
+              <span className="mx-2">|</span>
+              <a href="/about" className="text-blue-400 hover:underline">
+                About / How It Works
+              </a>
+            </p>
+
+            {/* Group 2: Social Links (aligned to the right) */}
+            <div className="flex items-center space-x-4">
+              <a
+                href="https://ko-fi.com/obsell"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Support me on Ko-fi"
+                className="text-gray-400 hover:text-white transition-colors text-2xl"
+              >
+                <SiKofi />
+              </a>
               <a
                 href="https://x.com/obsell_"
                 target="_blank"
@@ -261,8 +272,18 @@ const Rankings = ({ onImageClick }) => {
               >
                 <FaXTwitter />
               </a>
+              <a
+                href="https://github.com/dongq845"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View on GitHub"
+                className="text-gray-400 hover:text-white transition-colors text-2xl"
+              >
+                <FaGithub />
+              </a>
+              {/* To add another icon, just add another <a> tag here! */}
             </div>
-          </p>
+          </div>
         )}
       </footer>
     </>
