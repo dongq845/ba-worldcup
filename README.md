@@ -1,3 +1,5 @@
+Last Updated: 2025-08-01
+
 # Blue Archive Student World Cup (BETA)
 
 A full-stack web application that lets you vote for your favorite Blue Archive student in a dynamic, tournament-style bracket and contributes to a global ranking.
