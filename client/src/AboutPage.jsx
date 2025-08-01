@@ -16,7 +16,6 @@ const AboutPage = () => {
         </header>
 
         <main className="space-y-12">
-          {/* Our Mission Section */}
           <section>
             <h2 className="text-3xl font-bold mb-4 border-b-2 border-gray-700 pb-2">
               My Goal & Inspiration
@@ -38,14 +37,13 @@ const AboutPage = () => {
             </p>
             <p className="text-lg text-gray-300 leading-relaxed">
               That's what motivated me to build this project. My goal was to
-              create more than just a simple poll—I wanted to design a fun,
+              create more than just a simple poll — I wanted to design a fun,
               engaging, and fair platform where the global community could see
               rankings play out in a dynamic, tournament-style format, making
               every single choice matter.
             </p>
           </section>
 
-          {/* How It Works Section */}
           <section>
             <h2 className="text-3xl font-bold mb-4 border-b-2 border-gray-700 pb-2">
               How It Works
@@ -73,7 +71,6 @@ const AboutPage = () => {
                 />
               </div>
               <div>
-                {/* --- MODIFICATION START --- */}
                 <h3 className="text-2xl font-semibold text-blue-300 mb-2">
                   2. The Point System
                 </h3>
@@ -145,7 +142,6 @@ const AboutPage = () => {
                     +0 points
                   </li>
                 </ul>
-                {/* --- MODIFICATION END --- */}
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-blue-300 mb-2">
@@ -162,7 +158,6 @@ const AboutPage = () => {
             </div>
           </section>
 
-          {/* Fairness and Privacy */}
           <section>
             <h2 className="text-3xl font-bold mb-4 border-b-2 border-gray-700 pb-2">
               Fairness & Privacy
