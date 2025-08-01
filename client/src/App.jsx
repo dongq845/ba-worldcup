@@ -8,6 +8,7 @@ const generateUUID = () => crypto.randomUUID();
 
 const App = () => {
   const [gameStarted, setGameStarted] = useState(false);
+  const [gameConcluded, setGameConcluded] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const [userId, setUserId] = useState(null);
@@ -21,7 +22,7 @@ const App = () => {
     setUserId(currentUserId);
 
     const handleBeforeUnload = (event) => {
-      if (gameStarted) {
+      if (gameStarted && !gameConcluded) {
         event.preventDefault();
         event.returnValue = "";
       }
@@ -30,18 +31,19 @@ const App = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [gameStarted]);
+  }, [gameStarted, gameConcluded]);
 
   const handleStartGame = () => {
     setIsTransitioning(true);
     setTimeout(() => {
       setGameStarted(true);
+      setGameConcluded(false);
       setIsTransitioning(false);
     }, 500);
   };
 
   const handleGoHome = () => {
-    if (gameStarted) {
+    if (gameStarted && !gameConcluded) {
       const isConfirmed = window.confirm(
         "Are you sure you want to go home? All tournament progress will be lost."
       );
@@ -58,6 +60,10 @@ const App = () => {
       ...results,
     };
     submitResults(payload);
+  };
+
+  const handleGameEnd = () => {
+    setGameConcluded(true);
   };
 
   const openImageModal = (imageUrl) => {
@@ -130,7 +136,11 @@ const App = () => {
           </div>
         </div>
       ) : (
-        <Tournament onGoHome={handleGoHome} onSubmission={handleSubmission} />
+        <Tournament
+          onGoHome={handleGoHome}
+          onSubmission={handleSubmission}
+          onGameEnd={handleGameEnd}
+        />
       )}
     </>
   );

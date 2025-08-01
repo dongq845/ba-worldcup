@@ -4,17 +4,11 @@ import confetti from "canvas-confetti";
 import { getStudents } from "../services/api";
 import Results from "./Results";
 
-const POINTS = {
-  WINNER: 5,
-  RUNNER_UP: 3,
-  SEMI_FINALIST: 2,
-  QUARTER_FINALIST: 1,
-};
-
 const TEST_ON = 0;
 const TEST_ROUND = 8;
 
-const Tournament = ({ onGoHome, onSubmission }) => {
+const Tournament = ({ onGoHome, onSubmission, onGameEnd }) => {
+  const [allStudents, setAllStudents] = useState([]);
   const [contestants, setContestants] = useState([]);
   const [winners, setWinners] = useState([]);
   const [round, setRound] = useState(1);
@@ -26,14 +20,13 @@ const Tournament = ({ onGoHome, onSubmission }) => {
     winnerId: null,
     loserId: null,
   });
-  const [runnerUp, setRunnerUp] = useState(null);
-  const [semiFinalists, setSemiFinalists] = useState([]);
-  const [quarterFinalists, setQuarterFinalists] = useState([]);
+  const [losersByRound, setLosersByRound] = useState([]);
 
   useEffect(() => {
     if (tournamentPhase === "setup") {
       getStudents()
         .then((data) => {
+          setAllStudents(data);
           const shuffledWaifus = shuffleArray(data);
           setupTournament(shuffledWaifus);
         })
@@ -65,32 +58,6 @@ const Tournament = ({ onGoHome, onSubmission }) => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [tournamentWinner, contestants, currentMatch]);
-
-  useEffect(() => {
-    if (!tournamentWinner) return;
-
-    const semiFinalLosers = semiFinalists.filter(
-      (sf) => sf.id !== tournamentWinner.id && sf.id !== runnerUp.id
-    );
-
-    const semiFinalistIds = semiFinalists.map((sf) => sf.id);
-    const quarterFinalLosers = quarterFinalists.filter(
-      (qf) => !semiFinalistIds.includes(qf.id)
-    );
-
-    onSubmission({
-      winner: tournamentWinner,
-      runnerUp: runnerUp,
-      semiFinalists: semiFinalLosers,
-      quarterFinalists: quarterFinalLosers,
-    });
-  }, [
-    tournamentWinner,
-    runnerUp,
-    semiFinalists,
-    quarterFinalists,
-    onSubmission,
-  ]);
 
   const isPowerOfTwo = (n) => n > 0 && (n & (n - 1)) === 0;
 
@@ -155,11 +122,18 @@ const Tournament = ({ onGoHome, onSubmission }) => {
     const student2 = contestants[currentMatch * 2 + 1];
     const loser = winner.id === student1.id ? student2 : student1;
     setSelectionFeedback({ winnerId: winner.id, loserId: loser.id });
+
     setTimeout(() => {
       const newWinners = [...winners, winner];
       setWinners(newWinners);
+
       const nextMatch = currentMatch + 1;
       if (nextMatch * 2 >= contestants.length) {
+        const currentRoundLosers = contestants.filter(
+          (c) => !newWinners.find((w) => w.id === c.id)
+        );
+        setLosersByRound((prev) => [...prev, currentRoundLosers]);
+
         if (tournamentPhase === "preliminary") {
           const newMainContestants = shuffleArray([
             ...byeContestants,
@@ -172,20 +146,9 @@ const Tournament = ({ onGoHome, onSubmission }) => {
           setRound(1);
           setTournamentPhase("main");
         } else {
-          if (contestants.length === 8) {
-            setQuarterFinalists(contestants);
-          }
-          if (contestants.length === 4) {
-            setSemiFinalists(contestants);
-          }
           if (newWinners.length === 1) {
             setTournamentWinner(newWinners[0]);
-            if (contestants.length === 2) {
-              const finalLoser = contestants.find(
-                (c) => c.id !== newWinners[0].id
-              );
-              setRunnerUp(finalLoser);
-            }
+            onGameEnd();
           } else {
             setContestants(newWinners);
             setWinners([]);
@@ -197,18 +160,16 @@ const Tournament = ({ onGoHome, onSubmission }) => {
         setCurrentMatch(nextMatch);
       }
       setSelectionFeedback({ winnerId: null, loserId: null });
-    }, 500);
+    }, 0);
   };
 
   if (tournamentWinner) {
     return (
       <Results
         winner={tournamentWinner}
-        runnerUp={runnerUp}
-        semiFinalists={semiFinalists}
-        quarterFinalists={quarterFinalists}
+        losersByRound={losersByRound}
+        allStudents={allStudents}
         onGoHome={onGoHome}
-        points={POINTS}
       />
     );
   }

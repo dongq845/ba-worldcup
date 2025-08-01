@@ -1,4 +1,5 @@
 // ba-worldcup/client/src/AboutPage.jsx
+
 import { Link } from "react-router-dom";
 
 const AboutPage = () => {
@@ -62,7 +63,6 @@ const AboutPage = () => {
                   be highlighted with a green outline before advancing to the
                   next round, continuing until only one winner remains.
                 </p>
-                {/* --- MODIFICATION: Added comment box --- */}
                 <p className="mt-6 text-sm italic text-gray-400">
                   Example screenshot of a matchup:
                 </p>
@@ -73,15 +73,17 @@ const AboutPage = () => {
                 />
               </div>
               <div>
+                {/* --- MODIFICATION START --- */}
                 <h3 className="text-2xl font-semibold text-blue-300 mb-2">
                   2. The Point System
                 </h3>
                 <p className="text-lg text-gray-300 leading-relaxed">
                   Once you have a winner, your results are awarded points based
-                  on performance. This ensures that even characters who don't
-                  win the final round are rewarded for making it far.
+                  on performance. The system is designed so that{" "}
+                  <strong>every single win matters</strong>. Students earn more
+                  points for each round they clear, ensuring that even those who
+                  don't make it to the finals are rewarded for their success.
                 </p>
-                {/* --- MODIFICATION: Added comment box --- */}
                 <p className="mt-6 text-sm italic text-gray-400">
                   Example screenshot of the final results screen:
                 </p>
@@ -91,34 +93,59 @@ const AboutPage = () => {
                   className="mt-2 rounded-lg shadow-xl ring-1 ring-white/10"
                 />
                 <p className="text-lg text-gray-300 leading-relaxed mt-6">
-                  The distribution is:
+                  The point distribution:
                 </p>
                 <ul className="list-disc list-inside mt-4 space-y-2 text-lg bg-gray-800/50 p-6 rounded-lg">
                   <li>
                     <strong className="font-semibold text-amber-300">
                       Tournament Winner:
                     </strong>{" "}
-                    +5 points
+                    +25 points
                   </li>
                   <li>
                     <strong className="font-semibold text-gray-300">
                       Runner-Up (2nd):
                     </strong>{" "}
-                    +3 points
+                    +18 points
                   </li>
                   <li>
                     <strong className="font-semibold text-amber-600">
                       Semi-Finalists (3rd-4th):
                     </strong>{" "}
-                    +2 points
+                    +12 points
                   </li>
                   <li>
                     <strong className="font-semibold">
                       Quarter-Finalists (5th-8th):
                     </strong>{" "}
+                    +8 points
+                  </li>
+                  <li>
+                    <strong className="font-semibold">
+                      Round of 16 (9th-16th):
+                    </strong>{" "}
+                    +5 points
+                  </li>
+                  <li>
+                    <strong className="font-semibold">
+                      Round of 32 (17th-32nd):
+                    </strong>{" "}
+                    +3 points
+                  </li>
+                  <li>
+                    <strong className="font-semibold">
+                      Round of 64 (33rd-64th):
+                    </strong>{" "}
                     +1 point
                   </li>
+                  <li>
+                    <strong className="font-semibold text-gray-500">
+                      Round of 128 and Preliminary Round (65th and below):
+                    </strong>{" "}
+                    +0 points
+                  </li>
                 </ul>
+                {/* --- MODIFICATION END --- */}
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-blue-300 mb-2">

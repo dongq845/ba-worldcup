@@ -1,5 +1,6 @@
 // ba-worldcup/server/server.js
-require("dotenv").config();
+const nodeEnv = process.env.NODE_ENV || 'development';
+require('dotenv').config({ path: `.env.${nodeEnv}` });
 const express = require("express");
 const cors = require("cors");
 const { initializeDatabase } = require("./db");

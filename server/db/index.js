@@ -7,7 +7,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isProduction ? { rejectUnauthorized: false } : true,
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
 });
 
 const STUDENTS_JSON = path.join(__dirname, "..", "students.json");
@@ -21,17 +21,15 @@ const initializeDatabase = async () => {
       CREATE TABLE IF NOT EXISTS students (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
-        image TEXT NOT NULL
+        image TEXT NOT NULL,
+        points INTEGER DEFAULT 0
       )
     `);
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS submissions (
           userId TEXT PRIMARY KEY,
-          winnerId INTEGER NOT NULL,
-          runnerUpId INTEGER,
-          semiFinalistIds INTEGER[],
-          quarterFinalistIds INTEGER[]
+          placements JSONB
       )
     `);
 
@@ -45,7 +43,7 @@ const initializeDatabase = async () => {
 
       for (const student of studentData) {
         await client.query(
-          "INSERT INTO students (id, name, image) VALUES ($1, $2, $3)",
+          "INSERT INTO students (id, name, image, points) VALUES ($1, $2, $3, 0)",
           [student.id, student.name, student.image]
         );
       }
