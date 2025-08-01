@@ -1,0 +1,68 @@
+<!-- ba-worldcup/client/index.html -->
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- MODIFIED: More neutral and descriptive -->
+    <meta
+      name="description"
+      content="Vote for your favorite Blue Archive students in a dynamic tournament. Rank the Student roster, see how your votes contribute points to the global leaderboard, and find out who is number one."
+    />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://baworldcup.com/" />
+    <meta property="og:title" content="Blue Archive Student World Cup" />
+    <meta
+      property="og:description"
+      content="Start a tournament and vote for your favorite Blue Archive students. See how your choices affect the global, point-based leaderboard."
+    />
+    <meta property="og:image" content="https://baworldcup.com/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://baworldcup.com/" />
+    <meta property="twitter:title" content="Blue Archive Student World Cup" />
+    <meta
+      property="twitter:description"
+      content="Start a tournament and vote for your favorite Blue Archive students. See how your choices affect the global, point-based leaderboard."
+    />
+    <meta
+      property="twitter:image"
+      content="https://baworldcup.com/og-image.png"
+    />
+    <link
+      rel="preload"
+      href="/src/style.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript><link rel="stylesheet" href="/src/style.css" /></noscript>
+    <link rel="icon" href="/favicon.ico" />
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8072446203698239"
+      crossorigin="anonymous"
+    ></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Blue Archive Student World Cup",
+        "url": "https://baworldcup.com/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://baworldcup.com/",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <title>
+      Blue Archive Student World Cup - Vote, Rank & See Global Points
+    </title>
+  </head>
+  <body class="bg-gray-900 text-white h-full">
+    <div id="root" class="h-full"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

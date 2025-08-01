@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: ba-worldcup
+    env: static
+    headers:
+      - path: "/*"
+        name: "Strict-Transport-Security"
+        value: "max-age=31536000; includeSubDomains"
