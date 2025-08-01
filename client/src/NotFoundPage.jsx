@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"; // Link is a special component for navigating without a full page reload
+import { Link } from "react-router-dom";
 
 const NotFoundPage = () => {
   return (
