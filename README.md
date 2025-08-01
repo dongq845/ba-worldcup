@@ -19,33 +19,33 @@ This is the main landing page, displaying the global leaderboard of all students
 **Page Functionality:**
 
 - Displays a ranked list of students based on points accumulated from all user tournament submissions.
-- Shows each student's name, portrait, total points, and win rate.
-- Includes a "Last Updated" timestamp indicating when the roster was last changed.
+- Shows each student's name, portrait, and total points.
+- Includes a "Last Updated" timestamp indicating when the rankings were last changed.
 - Features a skeleton loader while data is being fetched to improve perceived performance.
 
 **API Interaction:**
 
 - **Endpoint:** `GET /api/rankings`
-- **Description:** On page load, the frontend makes a single GET request to this endpoint to retrieve the entire list of ranked students and their stats.
-- **Data Transfer (Response):** The server responds with a JSON object containing the rankings and metadata.
+- **Description:** On page load, the frontend makes a single GET request to this endpoint to retrieve the entire list of ranked students.
+- **Data Transfer (Response):** The server responds with a JSON array of student objects, sorted by points in descending order.
 
   _Example Response (`200 OK`):_
 
   ```json
-  {
-    "rankings": [
-      {
-        "id": 38,
-        "name": "Sunaookami Shiroko",
-        "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774561/Sunaookami_Shiroko_z9p9q9.png",
-        "totalPoints": 525,
-        "winCount": 21,
-        "rank1Ratio": 21.0
-      }
-    ],
-    "lastUpdated": "August 1, 2025",
-    "totalStudents": 128
-  }
+  [
+    {
+      "id": 1,
+      "name": "Aikiyo Fuuka",
+      "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774561/Aikiyo_Fuuka_rprrll.png",
+      "points": 150
+    },
+    {
+      "id": 2,
+      "name": "Akeboshi Himari",
+      "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774561/Akeboshi_Himari_z2exv3.png",
+      "points": 125
+    }
+  ]
   ```
 
 ### 2. Tournament Page (`/tournament`)
@@ -56,7 +56,7 @@ This is where the interactive voting takes place. Users are presented with a ser
 
 **Page Functionality:**
 
-- Dynamically generates a fair tournament bracket. If the number of students is not a power of two, it automatically creates a preliminary "play-in" round.
+- Dynamically generates a fair tournament bracket. If the number of students is not a power of two (e.g., 32, 64), it automatically creates a preliminary "play-in" round.
 - Users vote by clicking on a student's image or using the left/right arrow keys.
 - A progress bar visualizes the user's position within the current round.
 - Upon completion, the user is automatically redirected to the `/results` page.
@@ -65,6 +65,24 @@ This is where the interactive voting takes place. Users are presented with a ser
 
 - **Endpoint:** `GET /api/students`
 - **Description:** Before the tournament begins, the frontend fetches the complete list of all participating students. This data is then used to construct the bracket on the client-side.
+- **Data Transfer (Response):** The server provides a JSON array of all student objects, typically unsorted.
+
+  _Example Response (`200 OK`):_
+
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "Aikiyo Fuuka",
+      "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774561/Aikiyo_Fuuka_rprrll.png"
+    },
+    {
+      "id": 2,
+      "name": "Akeboshi Himari",
+      "image": "https://res.cloudinary.com/doi21aa5i/image/upload/v1753774561/Akeboshi_Himari_z2exv3.png"
+    }
+  ]
+  ```
 
 ### 3. Results Page (`/results`)
 
@@ -74,35 +92,38 @@ This page displays the outcome of the user's most recently completed tournament 
 
 **Page Functionality:**
 
-- Shows the tournament winner and a detailed breakdown of placements for other students.
+- Shows the tournament winner, runner-up, semi-finalists, and quarter-finalists.
 - Triggers a confetti animation to celebrate the winner.
 - Automatically sends the tournament results to the server to update the global rankings.
 
 **API Interaction:**
 
 - **Endpoint:** `POST /api/submit`
-- **Description:** After the final match, the frontend sends a POST request containing the results. The payload includes a unique `userId` (stored in `localStorage`) to ensure that each user's submission overwrites their previous one, preventing point spamming.
-- **Data Transfer (Request Body):** The client sends a JSON object with a `userId` and a `placements` array. The `placements` array is ordered by round, containing the IDs of students eliminated in each round, with the winner at the end.
+- **Description:** After the final match, the frontend sends a POST request containing the results. The payload includes a unique `userId` (stored in the user's `localStorage`) to ensure that each user's submission overwrites their previous one, preventing point spamming.
+- **Data Transfer (Request Body):** The client sends a JSON object detailing the placements.
 
-  _Example Payload (`POST /api/submit`):_
+  _Example Payload:_
 
   ```json
   {
     "userId": "a-unique-identifier-for-the-user",
-    "placements": [
-      [65, 66, ...],
-      [33, 34, ...],
-      [17, 18, ...],
-      [9, 10, 11, 12, 13, 14, 15, 16],
-      [5, 6, 7, 8],
-      [3, 4],
-      [2],
-      [1]
-    ]
+    "winner": { "id": 1 },
+    "runnerUp": { "id": 2 },
+    "semiFinalists": [{ "id": 3 }, { "id": 4 }],
+    "quarterFinalists": [{ "id": 5 }, { "id": 6 }, { "id": 7 }, { "id": 8 }]
   }
   ```
 
-- **Server Logic:** The backend processes this payload, using the index of each array in `placements` to determine the points to award (e.g., index `7` gets 25 points, index `6` gets 18 points, etc.). If the `userId` already exists, it first reverts the points from their previous submission before applying the new ones.
+- **Server Logic:** The backend processes this payload, calculates the points for each student (Winner: 5, Runner-up: 3, etc.), and updates the database. If the `userId` already exists in the submissions table, it first reverts the points from their previous submission before applying the new ones.
+- **Data Transfer (Response):** The server responds with a success or error message.
+
+  _Example Response (`200 OK`):_
+
+  ```json
+  {
+    "message": "Results submitted successfully"
+  }
+  ```
 
 ## Tech Stack
 
@@ -110,7 +131,7 @@ This page displays the outcome of the user's most recently completed tournament 
 - **Backend:** Node.js, Express.js
 - **Database:** PostgreSQL
 - **Infrastructure & Deployment:**
-  - **Render:** Provides continuous deployment and hosting. The backend runs as a **Web Service**, and the frontend is served as a **Static Site** with a global CDN. Uses `render.yaml` for declarative infrastructure as code.
+  - **Render:** Provides continuous deployment and hosting. The backend runs as a **Web Service**, and the frontend is served as a **Static Site** with a global CDN.
   - **Cloudflare:** Manages the custom domain, DNS records, and provides security services.
 
 ## Project Structure
@@ -153,12 +174,11 @@ This page displays the outcome of the user's most recently completed tournament 
 │
 └── server/                 # Contains the entire backend Node.js/Express application.
     │
-    ├── .env.development    # Environment variables for backend in development (should be in .gitignore).
-    ├── .env.production     # Environment variables for backend in production (should be in .gitignore).
+    ├── .env                # Environment variables for the backend (e.g., database connection string).
     ├── package-lock.json   # Records the exact version of each backend dependency.
     ├── package.json        # Lists the backend dependencies and scripts.
     ├── server.js           # The main entry point for the Express server.
-    ├── students.json       # The source of truth for all character data, used to populate the database.
+    ├── students.json         # The source of truth for all character data, used to populate the database.
     │
     ├── db/                 # Contains database-related modules.
     │   └── index.js        # Handles database connection and initialization.
@@ -170,11 +190,78 @@ This page displays the outcome of the user's most recently completed tournament 
         └── submissions.js # Routes for submissions.
 ```
 
+## Dependencies
+
+### Frontend (`client/package.json`)
+
+| Dependency                          | Description                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **@tailwindcss/vite**               | A utility-first CSS framework packed with classes to build any design, directly in your markup.   |
+| **canvas-confetti**                 | A lightweight library for creating a celebratory confetti effect on the screen.                   |
+| **flowbite**                        | A popular component library built on top of Tailwind CSS for creating modern UIs.                 |
+| **flowbite-react**                  | The official React components for the Flowbite library.                                           |
+| **react**                           | A JavaScript library for building user interfaces.                                                |
+| **react-dom**                       | Serves as the entry point to the DOM and server renderers for React.                              |
+| **react-icons**                     | A library that provides a wide variety of popular icon packs as React components.                 |
+| **react-lazy-load-image-component** | A React component to lazy load images and other components/elements.                              |
+| **react-router-dom**                | The standard library for routing in React, enabling navigation among views of various components. |
+
+#### Dev Dependencies
+
+| Dependency                      | Description                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------- |
+| **@eslint/js**                  | The core rules for ESLint, a pluggable and configurable linter tool for JavaScript.   |
+| **@tailwindcss/postcss**        | A PostCSS plugin for Tailwind CSS.                                                    |
+| **@types/react**                | TypeScript type definitions for React.                                                |
+| **@types/react-dom**            | TypeScript type definitions for React DOM.                                            |
+| **@vitejs/plugin-react**        | The official Vite plugin for React.                                                   |
+| **autoprefixer**                | A PostCSS plugin to parse CSS and add vendor prefixes to CSS rules.                   |
+| **eslint**                      | A tool for identifying and reporting on patterns found in ECMAScript/JavaScript code. |
+| **eslint-plugin-react-hooks**   | An ESLint plugin for enforcing the rules of React Hooks.                              |
+| **eslint-plugin-react-refresh** | An ESLint plugin for enforcing React Refresh conventions.                             |
+| **globals**                     | A package that provides global variables for ESLint.                                  |
+| **postcss**                     | A tool for transforming CSS with JavaScript.                                          |
+| **tailwindcss**                 | A utility-first CSS framework for rapidly building custom user interfaces.            |
+| **vite**                        | A fast frontend build tool that provides a rich feature set for modern web projects.  |
+
+### Backend (`server/package.json`)
+
+| Dependency  | Description                                                                                                                      |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **cors**    | A Node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.               |
+| **dotenv**  | A zero-dependency module that loads environment variables from a `.env` file into `process.env`.                                 |
+| **express** | A minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. |
+| **pg**      | A non-blocking PostgreSQL client for Node.js.                                                                                    |
+
+#### Dev Dependencies
+
+| Dependency  | Description                                                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **nodemon** | A tool that helps develop Node.js based applications by automatically restarting the node application when file changes in the directory are detected. |
+
+## Contributing
+
+We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+
+## Bug Reports & Feature Requests
+
+If you encounter a bug or have a feature request, please open an issue on our [GitHub Issues](https://github.com/dongq/ba-worldcup/issues) page.
+
+## Code of Conduct
+
+We have adopted the Contributor Covenant as our Code of Conduct. Please read our [Code of Conduct](CODE_OF_CONDUCT.md) to understand our community standards.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
 ## How to Run Locally
 
-To run this project on your local machine, you will need to have Node.js and PostgreSQL installed.
+To run this project on your local machine, you will need to have Node.js installed.
 
 ### 1. Clone the Repository
+
+First, clone this project to your local machine.
 
 ```bash
 git clone <your-repository-url>
@@ -197,33 +284,31 @@ npm install
 
 ### 3. Environment Variables
 
-This project uses environment variables to connect the frontend to the backend and the backend to the database. **Backend environment files should never be committed to public Git history and must be added to `.gitignore`.**
+This project requires environment variables to connect the frontend to the backend and the backend to the database.
 
-**Backend Setup (`/server`):**
+**Backend Setup:**
 
-1.  In the `/server` folder, create a file named `.env.development`.
-2.  Add your local database connection string to this file.
+In the `/server` folder, create a new file named `.env`. This file will hold the connection string for your database.
 
-    ```
-    # /server/.env.development
-    DATABASE_URL="postgresql://postgres:password@localhost:5432/baworldcup"
-    ```
+```
+# /server/.env
+DATABASE_URL="postgresql://<user>:<password>@<host>:<port>/<database>"
+```
 
-**Frontend Setup (`/client`):**
+**Frontend Setup:**
 
-1.  In the `/client` folder, create a file named `.env.development`.
-2.  Add the URL for your local backend server.
+In the `/client` folder, you will need to create a file named `.env.development`.
 
-    ```
-    # /client/.env.development
-    VITE_API_URL=http://localhost:3001
-    ```
+```
+# /client/.env.development
+VITE_API_URL=http://localhost:3001
+```
 
-    _(For production, the file `.env.production` points to your deployed server's URL, e.g., `https://ba-worldcup-server.onrender.com`. This file is safe and necessary to commit.)_
+_(For production, you would also create a `.env.production` file pointing to your deployed server's URL, e.g., `VITE_API_BASE_URL=https://ba-worldcup-server.onrender.com`)_
 
 ### 4. Run the Application
 
-This project requires **two terminals** running at the same time.
+This project requires **two terminals** running at the same time: one for the backend server and one for the frontend development server.
 
 **Terminal 1: Start the Backend**
 
@@ -231,8 +316,14 @@ This project requires **two terminals** running at the same time.
 # Navigate to the backend folder
 cd server
 
-# For development with auto-restarting on file changes:
-npm run dev
+# Start the Node.js server
+npm start
+
+# You should see: "Server is running on http://localhost:3001"
+# and "Successfully connected to PostgreSQL database."
+
+# Alternatively, for development with auto-restarting on file changes:
+# npm run dev
 ```
 
 **Terminal 2: Start the Frontend**
@@ -243,9 +334,25 @@ cd client
 
 # Start the Vite development server
 npm run dev
+
+# This will automatically open the application in your browser,
+# typically at http://localhost:5173/
 ```
 
+## Development & Testing
+
+To ensure code quality, run the linter for the client-side code:
+
+```bash
+# From the /client directory
+npm run lint
+```
+
+Currently, the project does not have an automated test suite. Future development should include adding unit and integration tests using a framework like Jest or Vitest.
+
 ## API Endpoints
+
+The backend server provides the following RESTful API endpoints.
 
 | Method | Endpoint        | Description                                         |
 | ------ | --------------- | --------------------------------------------------- |
@@ -269,21 +376,14 @@ Each character in the `students.json` array and the database follows this struct
 
 ### Submission Payload (`POST /api/submit`)
 
-The client sends a JSON payload with the user's ID and an ordered `placements` array. The position of each sub-array determines the points awarded.
+The client sends the following JSON payload when submitting results:
 
 ```json
 {
-  "userId": "a-unique-identifier-for-the-user",
-  "placements": [
-    // Array at index 0: 64 students who lost in the Round of 128 (0 points)
-    [65, 66, ...],
-    // Array at index 1: 32 students who lost in the Round of 64 (1 point)
-    [33, 34, ...],
-    // ...and so on...
-    // Array at index 6: The Runner-Up (18 points)
-    [2],
-    // Array at index 7: The Winner (25 points)
-    [1]
-  ]
+  "userId": "some-unique-user-id",
+  "winner": { "id": 1 },
+  "runnerUp": { "id": 2 },
+  "semiFinalists": [{ "id": 3 }, { "id": 4 }],
+  "quarterFinalists": [{ "id": 5 }, { "id": 6 }, { "id": 7 }, { "id": 8 }]
 }
 ```
