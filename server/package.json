@@ -6,10 +6,11 @@
     "pg": "^8.16.3"
   },
   "scripts": {
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "cross-env NODE_ENV=production node -r dotenv/config server.js",
+    "dev": "cross-env NODE_ENV=development nodemon -r dotenv/config server.js"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^3.1.10"
   }
 }

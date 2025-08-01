@@ -1,4 +1,5 @@
 // ba-worldcup/client/src/components/Rankings.jsx
+
 import { useState, useEffect, useRef } from "react";
 import { Tooltip } from "flowbite-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -88,33 +89,56 @@ const Rankings = ({ onImageClick }) => {
               <th className="p-3 w-32 text-left">Name</th>
               <th className="p-3 w-20 text-left">
                 <div className="inline-block">
+                  {/* --- MODIFICATION START --- */}
                   <Tooltip
                     content={
-                      <div className="text-left">
-                        Points are awarded based on final tournament rank:
+                      <div className="text-left max-w-xs">
+                        Points are awarded based on final tournament placement,
+                        so every win counts!
                         <ul className="mt-2 space-y-1">
                           <li>
+                            <strong>Point Distribution:</strong>
+                          </li>
+                          <li>
                             Winner (1st):
-                            <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
-                              +5 points
+                            <strong className="ml-2 font-semibold bg-amber-300 text-black px-1.5 py-0.5 rounded-md">
+                              +25
                             </strong>
                           </li>
                           <li>
                             Runner-up (2nd):
-                            <strong className="font-semibold bg-gray-300 px-1.5 py-0.5 rounded-md">
-                              +3 points
+                            <strong className="ml-2 font-semibold bg-gray-300 text-black px-1.5 py-0.5 rounded-md">
+                              +18
                             </strong>
                           </li>
                           <li>
-                            Semi-finalists (3rd-4th):
-                            <strong className="font-semibold bg-amber-600 px-1.5 py-0.5 rounded-md">
-                              +2 points
+                            Semi-Finalists (3rd-4th):
+                            <strong className="ml-2 font-semibold bg-amber-600 px-1.5 py-0.5 rounded-md">
+                              +12
                             </strong>
                           </li>
                           <li>
-                            Quarter-finalists (5th-8th):
-                            <strong className="font-semibold px-1.5 py-0.5 rounded-md">
-                              +1 point
+                            Quarter-Finalists (5th-8th):
+                            <strong className="ml-2 font-semibold px-1.5 py-0.5 rounded-md">
+                              +8
+                            </strong>
+                          </li>
+                          <li>
+                            Round of 16 (9th-16th):
+                            <strong className="ml-2 font-semibold px-1.5 py-0.5 rounded-md">
+                              +5
+                            </strong>
+                          </li>
+                          <li>
+                            Round of 32 (17th-32nd):
+                            <strong className="ml-2 font-semibold px-1.5 py-0.5 rounded-md">
+                              +3
+                            </strong>
+                          </li>
+                          <li>
+                            Round of 64 (33rd-64th):
+                            <strong className="ml-2 font-semibold px-1.5 py-0.5 rounded-md">
+                              +1
                             </strong>
                           </li>
                         </ul>
@@ -126,6 +150,7 @@ const Rankings = ({ onImageClick }) => {
                       Total Points
                     </span>
                   </Tooltip>
+                  {/* --- MODIFICATION END --- */}
                 </div>
               </th>
               <th className="p-3 w-32 text-left">
@@ -134,7 +159,7 @@ const Rankings = ({ onImageClick }) => {
                     content={
                       <span>
                         The percentage of tournaments finished in
-                        <strong className="font-semibold bg-amber-300 px-1.5 py-0.5 rounded-md">
+                        <strong className="font-semibold bg-amber-300 text-black px-1.5 py-0.5 rounded-md">
                           first place
                         </strong>
                       </span>
@@ -281,7 +306,6 @@ const Rankings = ({ onImageClick }) => {
               >
                 <FaGithub />
               </a>
-              {/* To add another icon, just add another <a> tag here! */}
             </div>
           </div>
         )}
