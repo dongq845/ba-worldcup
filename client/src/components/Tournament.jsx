@@ -160,7 +160,7 @@ const Tournament = ({ onGoHome, onSubmission, onGameEnd }) => {
         setCurrentMatch(nextMatch);
       }
       setSelectionFeedback({ winnerId: null, loserId: null });
-    }, 0);
+    }, 500);
   };
 
   if (tournamentWinner) {
