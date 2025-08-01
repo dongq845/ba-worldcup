@@ -22,11 +22,9 @@ exports.submit = async (req, res) => {
       [userId]
     );
 
-    // --- Robust Point Reversal Logic ---
     if (previousSubmission.rows.length > 0) {
       let previousPlacementsData = previousSubmission.rows[0].placements;
 
-      // FIX 1: If data from DB is a string, parse it into an array.
       if (typeof previousPlacementsData === "string") {
         try {
           previousPlacementsData = JSON.parse(previousPlacementsData);
@@ -35,7 +33,7 @@ exports.submit = async (req, res) => {
             "Could not parse previous submission JSON, skipping point revert.",
             e
           );
-          previousPlacementsData = []; // Default to empty on error
+          previousPlacementsData = [];
         }
       }
 
@@ -43,9 +41,8 @@ exports.submit = async (req, res) => {
         for (let i = 0; i < previousPlacementsData.length; i++) {
           const points = pointMap[i] || 0;
           const studentIds = previousPlacementsData[i];
-          // Only run query if there are points to subtract
+
           if (studentIds && studentIds.length > 0 && points > 0) {
-            // SECURITY FIX: Use parameterized queries for points
             await client.query(
               `UPDATE students SET points = points - $1 WHERE id = ANY($2::int[])`,
               [points, studentIds]
@@ -55,13 +52,11 @@ exports.submit = async (req, res) => {
       }
     }
 
-    // --- Apply New Points ---
     for (let i = 0; i < placements.length; i++) {
       const points = pointMap[i] || 0;
       const studentIds = placements[i];
-      // Only run query if there are points to add
+
       if (studentIds && studentIds.length > 0 && points > 0) {
-        // SECURITY FIX: Use parameterized queries for points
         await client.query(
           `UPDATE students SET points = points + $1 WHERE id = ANY($2::int[])`,
           [points, studentIds]
@@ -76,7 +71,6 @@ exports.submit = async (req, res) => {
         placements = EXCLUDED.placements;
     `;
 
-    // FIX 2: Revert to using JSON.stringify() to solve the database insertion error.
     await client.query(queryText, [userId, JSON.stringify(placements)]);
 
     await client.query("COMMIT");
@@ -84,7 +78,6 @@ exports.submit = async (req, res) => {
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Failed to save submission:", err);
-    // Send the actual error back in the response for easier debugging
     res.status(500).json({ error: "Failed to save submission.", details: err });
   } finally {
     client.release();
